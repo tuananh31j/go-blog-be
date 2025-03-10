@@ -9,6 +9,10 @@ import (
 
 	"nta-blog/config"
 	"nta-blog/db"
+	"nta-blog/libs/appctx"
+	"nta-blog/libs/logger"
+	"nta-blog/middleware"
+	"nta-blog/routes"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -17,12 +21,29 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	errsChan := make(chan error, 1)
 	app := fiber.New()
-	mongoDB := db.ConnectMongo(config.MongoURI)
-	redisDB := db.ConnectRedis(config.RedisHost, config.RedisPort, config.RedisPass)
 
-	address := fmt.Sprintf("%s:%s", config.AppHost, config.AppPort)
+	logger := logger.NewLogger()
 
-	defer db.DisconnectMongo(mongoDB)
+	redisDB := db.ConnectRedis(config.Env.RedisHost, config.Env.RedisPort, config.Env.RedisPass)
+	mongoClient, err := db.ConnectMongo(config.Env.MongoURI)
+	mongoDB := mongoClient.Database("blog")
+	db.SetupUserCollection(mongoDB)
+	db.SetupBlogCollection(mongoDB)
+	db.SetupTagCollection(mongoDB)
+
+	appContext := appctx.NewAppContext(mongoDB, redisDB, logger)
+
+	app.Use(middleware.Recover(appContext))
+
+	routes.InitRoutes(app, appContext)
+
+	if err != nil {
+		panic(err)
+	}
+
+	address := fmt.Sprintf("%s:%s", config.Env.AppHost, config.Env.AppPort)
+
+	defer db.DisconnectMongo(mongoClient)
 	defer db.DisconnectRedis(redisDB)
 	defer cancel()
 
@@ -33,6 +54,8 @@ func main() {
 func startServer(app *fiber.App, address string, errsChan chan<- error) {
 	if err := app.Listen(address); err != nil {
 		errsChan <- fmt.Errorf("Something went wrong when starting the server! %w", err)
+	} else {
+		fmt.Printf("Server is running on: %v", address)
 	}
 }
 

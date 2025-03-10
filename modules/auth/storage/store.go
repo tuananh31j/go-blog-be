@@ -1,4 +1,4 @@
-package authstore
+package authtore
 
 import (
 	"github.com/redis/go-redis/v9"

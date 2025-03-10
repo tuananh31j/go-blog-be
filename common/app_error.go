@@ -65,3 +65,12 @@ func ErrInternal(err error) *AppError {
 		Log:        err.Error(),
 	}
 }
+
+func ErrBadRequest(err error) *AppError {
+	return &AppError{
+		StatusCode: http.StatusBadRequest, // 400
+		RootErr:    err,
+		Message:    "Bad request",
+		Log:        err.Error(),
+	}
+}

@@ -11,20 +11,20 @@ type LoginStore interface {
 	SaveRefreshToken(ctx context.Context, token, userId string) error
 }
 
-type loginStore struct {
+type loginRepo struct {
 	store LoginStore
 }
 
-func NewLoginStore(store LoginStore) *loginStore {
-	return &loginStore{store: store}
+func NewLoginRepo(store LoginStore) *loginRepo {
+	return &loginRepo{store: store}
 }
 
-func (repo *loginStore) GetUserByEmail(ctx context.Context, email string) (*authmdl.User, error) {
+func (repo *loginRepo) GetUserByEmail(ctx context.Context, email string) (*authmdl.User, error) {
 	return repo.store.FindOneUser(ctx, map[string]interface{}{
 		"email": email,
 	})
 }
 
-func (repo *loginStore) SaveRefreshToken(ctx context.Context, token, userId string) error {
+func (repo *loginRepo) SaveRefreshToken(ctx context.Context, token, userId string) error {
 	return repo.store.SaveRefreshToken(ctx, token, userId)
 }

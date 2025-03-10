@@ -2,14 +2,17 @@ package authBusiness
 
 import (
 	"context"
+	"fmt"
 
 	"nta-blog/common"
 	authmdl "nta-blog/modules/auth/model"
-	authrepo "nta-blog/modules/auth/repo"
+
+	"github.com/rs/zerolog"
 )
 
 type LoginRepo interface {
-	authrepo.LoginStore
+	GetUserByEmail(ctx context.Context, email string) (*authmdl.User, error)
+	SaveRefreshToken(ctx context.Context, token, userId string) error
 }
 
 type Hasher interface {
@@ -17,25 +20,29 @@ type Hasher interface {
 	SetSalt(s string)
 }
 
-type loginRepo struct {
-	store  LoginRepo
+type loginBiz struct {
+	repo   LoginRepo
 	hasher Hasher
+	logger *zerolog.Logger
 }
 
-func NewLogin(store LoginRepo) *loginRepo {
-	return &loginRepo{store: store}
+func NewLoginBiz(repo LoginRepo, hashser Hasher) *loginBiz {
+	return &loginBiz{repo: repo, hasher: hashser}
 }
 
-func (biz *loginRepo) Login(ctx context.Context, data *authmdl.LoginDTO) error {
-	user, err := biz.store.FindOneUser(ctx, map[string]interface{}{"email": data.Email})
+func (biz *loginBiz) Login(ctx context.Context, data authmdl.LoginDTO) (accessToken string, refreshToken string, err error) {
+	user, err := biz.repo.GetUserByEmail(ctx, data.Email)
 	if err != nil {
-		return common.NewErrorResponse(err, "Not valid!", err.Error())
+		biz.logger.Debug().Msg(fmt.Sprintf("Recover>>>>>>> %v", err))
+		return "", "", common.NewErrorResponse(err, "Not valid!", err.Error())
 	}
 	biz.hasher.SetSalt(user.Salt)
 	hash := biz.hasher.Hash()
-	if hash == user.Password {
-		return common.NewCustomError(err, "Your data is not valid!", "Password is wrong!")
+	if hash != user.Password {
+		return "", "", common.NewCustomError(err, "Your data is not valid!", "Password is wrong!")
 	}
+	accessToken = user.CreateAccessToken()
+	refreshToken = user.CreateRefreshToken()
 
-	return nil
+	return accessToken, refreshToken, nil
 }
