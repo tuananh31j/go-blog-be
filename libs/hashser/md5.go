@@ -6,23 +6,8 @@ import (
 	"fmt"
 )
 
-type md5Hash struct {
-	password string
-	salt     string
-}
-
-func NewMd5Hash(pass string) *md5Hash {
-	return &md5Hash{
-		password: pass,
-	}
-}
-
-func (h *md5Hash) SetSalt(s string) {
-	h.salt = s
-}
-
-func (h *md5Hash) Hash() string {
+func Hash(pwd, salt string) string {
 	hasher := md5.New()
-	hasher.Write([]byte(fmt.Sprintf("%v%v", h.password, h.salt)))
+	hasher.Write([]byte(fmt.Sprintf("%v%v", pwd, salt)))
 	return hex.EncodeToString(hasher.Sum(nil))
 }

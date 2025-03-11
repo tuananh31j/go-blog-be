@@ -45,9 +45,7 @@ func SetupUserCollection(db *mongo.Database) {
 	userDB := db.Collection(cnst.UserCollection)
 	salt := common.GenSalt()
 	password := "12345678"
-	md5Hash := hashser.NewMd5Hash(password)
-	md5Hash.SetSalt(salt)
-	hash := md5Hash.Hash()
+	hash := hashser.Hash(password, salt)
 	if _, err := userDB.DeleteMany(context.Background(), bson.D{}); err != nil {
 		log.Fatal(err)
 	}
@@ -55,7 +53,7 @@ func SetupUserCollection(db *mongo.Database) {
 
 	_, err := userDB.InsertOne(context.Background(), bson.D{
 		{Key: "email", Value: "admin@gmail.com"},
-		{Key: "role", Value: 1},
+		{Key: "role", Value: cnst.AdminRole},
 		{Key: "password", Value: hash},
 		{Key: "salt", Value: salt},
 	})

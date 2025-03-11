@@ -3,7 +3,8 @@ package db
 import (
 	"context"
 	"fmt"
-	"log"
+
+	"nta-blog/libs/logger"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -25,21 +26,21 @@ func ConnectRedis(host, port, pass string) *redis.Client {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println("key", val)
+	logger.ZeroLog.Info().Msgf("key: %v", val)
 
 	val2, err := rdb.Get(ctx, "key2").Result()
 	if err == redis.Nil {
-		fmt.Println("key2 does not exist")
+		logger.ZeroLog.Info().Msgf("key2 does not exist")
 	} else if err != nil {
 		panic(err)
 	} else {
-		fmt.Println("key2", val2)
+		logger.ZeroLog.Info().Msgf("key2: %v", val2)
 	}
 	return rdb
 }
 
 func DisconnectRedis(r *redis.Client) {
 	if err := r.Close(); err != nil {
-		log.Fatalf("Somethings wrong when close redis: >>>>>>>>%v", err.Error())
+		logger.ZeroLog.Info().Msgf("Somethings wrong when close redis: >>>>>>>>%v", err.Error())
 	}
 }

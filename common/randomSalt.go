@@ -35,5 +35,5 @@ func MustString(length int) string {
 }
 
 func GenSalt() string {
-	return MustString(5)
+	return MustString(15)
 }

@@ -9,4 +9,5 @@ import (
 
 func authRouter(router fiber.Router, actx appctx.AppContext) {
 	router.Post("/login", authtransportfiber.Login(actx))
+	router.Get("/google_callback", authtransportfiber.GoogleLogin(actx))
 }

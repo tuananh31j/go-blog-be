@@ -25,6 +25,7 @@ func main() {
 	logger := logger.NewLogger()
 
 	redisDB := db.ConnectRedis(config.Env.RedisHost, config.Env.RedisPort, config.Env.RedisPass)
+
 	mongoClient, err := db.ConnectMongo(config.Env.MongoURI)
 	mongoDB := mongoClient.Database("blog")
 	db.SetupUserCollection(mongoDB)
@@ -36,6 +37,7 @@ func main() {
 	app.Use(middleware.Recover(appContext))
 
 	routes.InitRoutes(app, appContext)
+	app.Use(middleware.NotFound)
 
 	if err != nil {
 		panic(err)
@@ -55,7 +57,7 @@ func startServer(app *fiber.App, address string, errsChan chan<- error) {
 	if err := app.Listen(address); err != nil {
 		errsChan <- fmt.Errorf("Something went wrong when starting the server! %w", err)
 	} else {
-		fmt.Printf("Server is running on: %v", address)
+		logger.ZeroLog.Info().Msg(fmt.Sprintf("Server is running on: %v", address))
 	}
 }
 

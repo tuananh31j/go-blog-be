@@ -74,3 +74,25 @@ func ErrBadRequest(err error) *AppError {
 		Log:        err.Error(),
 	}
 }
+
+func ErrNotFound(err error) *AppError {
+	return &AppError{
+		StatusCode: http.StatusNotFound, // 404
+		RootErr:    err,
+		Message:    "Resource not found",
+		Log:        err.Error(),
+	}
+}
+
+func ErrSideEffect(err error, msg string) *AppError {
+	return &AppError{
+		StatusCode: http.StatusConflict, // 409
+		RootErr:    err,
+		Message:    msg,
+		Log:        err.Error(),
+	}
+}
+
+func ErrSideEffectSaveRefreshToken(err error) *AppError {
+	return ErrSideEffect(err, "Save refresh token is faild!")
+}
