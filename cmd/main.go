@@ -7,12 +7,12 @@ import (
 	"os/signal"
 	"syscall"
 
-	"nta-blog/config"
-	"nta-blog/db"
-	"nta-blog/libs/appctx"
-	"nta-blog/libs/logger"
-	"nta-blog/middleware"
-	"nta-blog/routes"
+	"nta-blog/internal/infrastructure/config"
+	"nta-blog/internal/infrastructure/db"
+	"nta-blog/internal/lib/appctx"
+	"nta-blog/internal/lib/logger"
+	"nta-blog/internal/middleware"
+	routes "nta-blog/internal/router"
 
 	"github.com/gofiber/fiber/v2"
 )
