@@ -7,6 +7,8 @@ import (
 	"nta-blog/internal/infrastructure/config"
 )
 
+const UserCollectionName = "users"
+
 type User struct {
 	common.CommonModal
 	Name     string `bson:"name" json:"name"`

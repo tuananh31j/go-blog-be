@@ -8,6 +8,10 @@ import (
 
 	"nta-blog/internal/common"
 	cnst "nta-blog/internal/constant"
+	blogModel "nta-blog/internal/domain/model/blog"
+	guestbookModel "nta-blog/internal/domain/model/guestBook"
+	tagModel "nta-blog/internal/domain/model/tag"
+	userModel "nta-blog/internal/domain/model/user"
 	"nta-blog/internal/lib/hashser"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -42,7 +46,7 @@ func ConnectMongo(uri string) (*mongo.Client, error) {
 }
 
 func SetupUserCollection(db *mongo.Database) {
-	userDB := db.Collection(cnst.UserCollection)
+	userDB := db.Collection(userModel.UserCollectionName)
 	salt := common.GenSalt()
 	password := "12345678"
 	hash := hashser.Hash(password, salt)
@@ -63,17 +67,17 @@ func SetupUserCollection(db *mongo.Database) {
 }
 
 func SetupBlogCollection(db *mongo.Database) {
-	blogDB := db.Collection(cnst.BlogCollection)
-	createIndexFiled(blogDB, "tags")
+	blogDB := db.Collection(blogModel.BlogCollection)
+	createIndexFiled(blogDB, "tag_ids")
 }
 
 func SetupGuestBookCollection(db *mongo.Database) {
-	guestBookDB := db.Collection(cnst.GuestBook)
+	guestBookDB := db.Collection(guestbookModel.GuestBookCollection)
 	createIndexFiled(guestBookDB, "user_id")
 }
 
 func SetupTagCollection(db *mongo.Database) {
-	db.Collection(cnst.TagCollection)
+	db.Collection(tagModel.TagCollection)
 }
 
 func createIndexFiled(col *mongo.Collection, field string) {

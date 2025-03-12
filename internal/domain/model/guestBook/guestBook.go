@@ -1,0 +1,17 @@
+package guestbookModel
+
+import (
+	"nta-blog/internal/common"
+	cnst "nta-blog/internal/constant"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
+const GuestBookCollection = "guest_books"
+
+type GuestBook struct {
+	common.CommonModal
+	Message string             `bson:"message" json:"message"`
+	UserId  primitive.ObjectID `bson:"user_id" json:"user_id"`
+	Status  cnst.Status        `bson:"status" json:"status"`
+}
