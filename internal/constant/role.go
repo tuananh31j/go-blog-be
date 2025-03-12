@@ -5,7 +5,14 @@ package cnst
 // 	admin 1
 // }
 
-const (
-	UserRole = iota
-	AdminRole
-)
+type TRoleAccount uint8
+
+type role struct {
+	User  TRoleAccount
+	Admin TRoleAccount
+}
+
+var Role = role{
+	User:  0,
+	Admin: 1,
+}

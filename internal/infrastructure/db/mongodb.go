@@ -57,7 +57,7 @@ func SetupUserCollection(db *mongo.Database) {
 
 	_, err := userDB.InsertOne(context.Background(), bson.D{
 		{Key: "email", Value: "admin@gmail.com"},
-		{Key: "role", Value: cnst.AdminRole},
+		{Key: "role", Value: cnst.Role.Admin},
 		{Key: "password", Value: hash},
 		{Key: "salt", Value: salt},
 	})

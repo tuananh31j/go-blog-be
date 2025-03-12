@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"nta-blog/internal/common"
+	cnst "nta-blog/internal/constant"
 	"nta-blog/internal/infrastructure/config"
 )
 
@@ -11,11 +12,12 @@ const UserCollectionName = "users"
 
 type User struct {
 	common.CommonModal
-	Name     string `bson:"name" json:"name"`
-	Password string `bson:"password" json:"omitempty"`
-	Salt     string `bson:"salt" json:"salt"`
-	Email    string `bson:"email" json:"email"`
-	Role     int    `bson:"role" json:"role"`
+	Name     string              `bson:"name" json:"name"`
+	Password string              `bson:"password" json:"omitempty"`
+	Salt     string              `bson:"salt" json:"salt"`
+	Email    string              `bson:"email" json:"email"`
+	Role     cnst.TRoleAccount   `bson:"role" json:"role"`
+	Status   cnst.TStatusAccount `bson:"status" json:"status"`
 }
 
 func (u *User) CreateAccessToken() string {
