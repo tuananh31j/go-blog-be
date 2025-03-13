@@ -1,4 +1,4 @@
-package loginService
+package authService
 
 import (
 	"context"
@@ -14,25 +14,25 @@ type TokenStore interface {
 	SaveRefreshToken(ctx context.Context, token, userId string) error
 }
 
-type loginSevice struct {
+type loginService struct {
 	userstore  UserStore
 	tokenStore TokenStore
 }
 
-func NewLoginService(us UserStore, ts TokenStore) *loginSevice {
-	return &loginSevice{userstore: us, tokenStore: ts}
+func NewLoginService(us UserStore, ts TokenStore) *loginService {
+	return &loginService{userstore: us, tokenStore: ts}
 }
 
-func (sv *loginSevice) FindOneUser(ctx context.Context, conditions map[string]interface{}) (*userModel.User, error) {
+func (sv *loginService) FindOneUser(ctx context.Context, conditions map[string]interface{}) (*userModel.User, error) {
 	return sv.userstore.FindOneUser(
 		ctx, conditions,
 	)
 }
 
-func (sv *loginSevice) CreateUser(ctx context.Context, dto *userModel.User) error {
+func (sv *loginService) CreateUser(ctx context.Context, dto *userModel.User) error {
 	return sv.userstore.CreateUser(ctx, dto)
 }
 
-func (sv *loginSevice) SaveRefreshToken(ctx context.Context, token, userId string) error {
+func (sv *loginService) SaveRefreshToken(ctx context.Context, token, userId string) error {
 	return sv.tokenStore.SaveRefreshToken(ctx, token, userId)
 }

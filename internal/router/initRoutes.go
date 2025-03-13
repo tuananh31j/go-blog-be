@@ -10,5 +10,8 @@ func InitRoutes(app *fiber.App, actx appctx.AppContext) {
 	routerV1 := app.Group("/api/v1")
 
 	auth := routerV1.Group("/auth")
+	image := routerV1.Group("/images")
+
+	imageRouter(image, actx)
 	authRouter(auth, actx)
 }

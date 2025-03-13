@@ -6,7 +6,7 @@ import (
 	"nta-blog/internal/common"
 	authBusiness "nta-blog/internal/domain/business/auth"
 	userModel "nta-blog/internal/domain/model/user"
-	loginService "nta-blog/internal/domain/service"
+	authService "nta-blog/internal/domain/service/auth"
 	tokenStorage "nta-blog/internal/domain/storage/token"
 	userStorage "nta-blog/internal/domain/storage/user"
 	"nta-blog/internal/infrastructure/config"
@@ -26,7 +26,7 @@ func Login(actx appctx.AppContext) func(c *fiber.Ctx) error {
 		mongodb := actx.GetMongoDB()
 		userStore := userStorage.NewStore(mongodb, rdb)
 		tokenStore := tokenStorage.NewStore(mongodb, rdb)
-		loginSevice := loginService.NewLoginService(userStore, tokenStore)
+		loginSevice := authService.NewLoginService(userStore, tokenStore)
 		biz := authBusiness.NewLoginBiz(loginSevice, logger)
 
 		accessToken, refreshToken, err := biz.Login(c.Context(), payload)

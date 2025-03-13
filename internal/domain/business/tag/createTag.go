@@ -9,7 +9,7 @@ import (
 
 type CreateTagService interface {
 	CheckTagExists(ctx context.Context, tagName string) error
-	CreateNewTag(ctx context.Context, tag tagModel.Tag) error
+	CreateNewTag(ctx context.Context, tag tagModel.TagDTO) error
 }
 
 type createTagBiz struct {
@@ -20,7 +20,7 @@ func NewCreateTagBiz(sv CreateTagService) *createTagBiz {
 	return &createTagBiz{service: sv}
 }
 
-func (biz *createTagBiz) CreateNewTag(ctx context.Context, tag tagModel.Tag) error {
+func (biz *createTagBiz) CreateNewTag(ctx context.Context, tag tagModel.TagDTO) error {
 	if err := biz.service.CheckTagExists(ctx, tag.Name); err == nil {
 		return common.NewErrorResponse(err, "Tên thẻ đã tồn tại", "Tag name is exists!")
 	}

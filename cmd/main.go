@@ -27,12 +27,22 @@ func main() {
 	redisDB := db.ConnectRedis(config.Env.RedisHost, config.Env.RedisPort, config.Env.RedisPass)
 
 	mongoClient, err := db.ConnectMongo(config.Env.MongoURI)
+	if err != nil {
+		logger.Debug().Msg(err.Error())
+		panic(err)
+	}
 	mongoDB := mongoClient.Database("blog")
 	db.SetupUserCollection(mongoDB)
 	db.SetupBlogCollection(mongoDB)
 	db.SetupTagCollection(mongoDB)
+	db.SetupImageCollection(mongoDB)
 
-	appContext := appctx.NewAppContext(mongoDB, redisDB, logger)
+	cld, err := db.NewCld(config.Env.CloudinaryName, config.Env.CloudinaryAPIKey, config.Env.CloudinaryAPISecret)
+	if err != nil {
+		logger.Debug().Msg(err.Error())
+	}
+
+	appContext := appctx.NewAppContext(mongoDB, redisDB, cld, logger)
 
 	app.Use(middleware.Recover(appContext))
 

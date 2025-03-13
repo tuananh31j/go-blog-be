@@ -10,6 +10,7 @@ import (
 	cnst "nta-blog/internal/constant"
 	blogModel "nta-blog/internal/domain/model/blog"
 	guestbookModel "nta-blog/internal/domain/model/guestBook"
+	imageModel "nta-blog/internal/domain/model/image"
 	tagModel "nta-blog/internal/domain/model/tag"
 	userModel "nta-blog/internal/domain/model/user"
 	"nta-blog/internal/lib/hashser"
@@ -69,6 +70,10 @@ func SetupUserCollection(db *mongo.Database) {
 func SetupBlogCollection(db *mongo.Database) {
 	blogDB := db.Collection(blogModel.BlogCollection)
 	createIndexFiled(blogDB, "tag_ids")
+}
+
+func SetupImageCollection(db *mongo.Database) {
+	db.Collection(imageModel.ImageCollection)
 }
 
 func SetupGuestBookCollection(db *mongo.Database) {

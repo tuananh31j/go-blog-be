@@ -19,6 +19,10 @@ type env struct {
 
 	GoogleClientId     string
 	GoogleClientSecret string
+
+	CloudinaryAPIKey    string
+	CloudinaryAPISecret string
+	CloudinaryName      string
 }
 
 var Env env
@@ -41,6 +45,11 @@ func init() {
 
 	Env.GoogleClientId = os.Getenv("GOOGLE_CLIENT_ID")
 	Env.GoogleClientSecret = os.Getenv("GOOGLE_CLIENT_SECRET")
+
+	Env.CloudinaryAPIKey = os.Getenv("CLOUDINARY_API_KEY")
+	Env.CloudinaryAPISecret = os.Getenv("CLOUDINARY_API_SECRET")
+	Env.CloudinaryName = os.Getenv("CLOUDINARY_CLOUD_NAME")
+
 	GoogleConfig(Env.GoogleClientId, Env.GoogleClientSecret)
 }
 

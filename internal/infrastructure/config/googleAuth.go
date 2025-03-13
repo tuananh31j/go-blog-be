@@ -11,7 +11,7 @@ type Config struct {
 
 var GuConfig Config
 
-func GoogleConfig(clientId, clientSecret string) oauth2.Config {
+func GoogleConfig(clientId, clientSecret string) {
 	GuConfig.GoogleLoginConfig = oauth2.Config{
 		RedirectURL:  "http://localhost:5000/api/v1/auth/google_callback",
 		ClientID:     clientId,
@@ -22,6 +22,4 @@ func GoogleConfig(clientId, clientSecret string) oauth2.Config {
 		},
 		Endpoint: google.Endpoint,
 	}
-
-	return GuConfig.GoogleLoginConfig
 }
