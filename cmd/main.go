@@ -20,7 +20,7 @@ import (
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	errsChan := make(chan error, 1)
-	app := fiber.New()
+	app := fiber.New(config.FiberConfig(config.Env.AppENV))
 
 	logger := logger.NewLogger()
 
