@@ -33,6 +33,7 @@ func NewFullErrorResponse(stt int, root error, msg, log string) *AppError {
 func NewUnauthorized(root error, msg, log string) *AppError {
 	return &AppError{
 		StatusCode: http.StatusUnauthorized,
+		Message:    msg,
 		RootErr:    root,
 		Log:        log,
 	}
@@ -95,4 +96,13 @@ func ErrSideEffect(err error, msg string) *AppError {
 
 func ErrSideEffectSaveRefreshToken(err error) *AppError {
 	return ErrSideEffect(err, "Save refresh token is faild!")
+}
+
+func ErrInvalidRequest(err error) *AppError {
+	return &AppError{
+		StatusCode: http.StatusUnprocessableEntity, // 422
+		RootErr:    err,
+		Message:    "Invalid request",
+		Log:        err.Error(),
+	}
 }

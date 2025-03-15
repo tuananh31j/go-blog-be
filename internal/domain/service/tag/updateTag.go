@@ -9,8 +9,8 @@ import (
 )
 
 type UpdateTagStore interface {
-	GetOnceTag(ctx context.Context, conditions map[string]interface{}) (*tagModel.Tag, error)
-	UpdateTag(ctx context.Context, tagId primitive.ObjectID, dto tagModel.TagDTO) error
+	Find(ctx context.Context, conditions map[string]interface{}) (*tagModel.Tag, error)
+	Update(ctx context.Context, condition map[string]interface{}, dto map[string]interface{}) error
 }
 
 type updateTagService struct {
@@ -22,15 +22,17 @@ func NewUpdateTagService(s UpdateTagStore) *updateTagService {
 }
 
 func (sv *updateTagService) CheckTagNameExists(ctx context.Context, tagName string) error {
-	_, err := sv.store.GetOnceTag(ctx, map[string]interface{}{"name": tagName})
+	_, err := sv.store.Find(ctx, map[string]interface{}{"name": tagName})
 	return err
 }
 
 func (sv *updateTagService) CheckTagIdExists(ctx context.Context, tagId primitive.ObjectID) (*tagModel.Tag, error) {
-	result, err := sv.store.GetOnceTag(ctx, map[string]interface{}{"_id": tagId})
+	result, err := sv.store.Find(ctx, map[string]interface{}{"_id": tagId})
 	return result, err
 }
 
-func (sv *updateTagService) UpdateTag(ctx context.Context, tagId primitive.ObjectID, tag tagModel.TagDTO) error {
-	return sv.store.UpdateTag(ctx, tagId, tag)
+func (sv *updateTagService) UpdateTag(ctx context.Context, tagId primitive.ObjectID, newName string) error {
+	return sv.store.Update(ctx, map[string]interface{}{"_id": tagId}, map[string]interface{}{
+		"name": newName,
+	})
 }

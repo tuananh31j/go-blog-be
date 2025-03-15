@@ -35,7 +35,7 @@ func NewLogger() *zerolog.Logger {
 				return fmt.Sprintf("{%v}", v)
 			},
 			FormatFieldValue: func(v interface{}) string {
-				return fmt.Sprintf("??%v??", v)
+				return fmt.Sprintf("<%v>", v)
 			},
 			FormatErrFieldName: func(v interface{}) string {
 				return fmt.Sprintf("[[%v]]", v)

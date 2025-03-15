@@ -2,6 +2,7 @@ package authBusiness
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"nta-blog/internal/common"
@@ -13,7 +14,7 @@ import (
 
 type LoginSevice interface {
 	FindOneUser(ctx context.Context, conditions map[string]interface{}) (*userModel.User, error)
-	SaveRefreshToken(ctx context.Context, token, userId string) error
+	SaveRefreshToken(ctx context.Context, token string) error
 }
 
 type loginBiz struct {
@@ -27,6 +28,8 @@ func NewLoginBiz(service LoginSevice, log *zerolog.Logger) *loginBiz {
 
 func (biz *loginBiz) Login(ctx context.Context, data userModel.LoginDTO) (accessToken string, refreshToken string, err error) {
 	user, err := biz.service.FindOneUser(ctx, map[string]interface{}{"email": data.Email})
+	jsonData, _ := json.Marshal(user)
+	biz.logger.Info().Interface("user", string(jsonData)).Msg("User data")
 	if err != nil {
 		biz.logger.Debug().Msg(fmt.Sprintf("Recover>>>>>>> %v", err))
 		return "", "", common.NewErrorResponse(err, "Not valid!", err.Error())
@@ -40,7 +43,7 @@ func (biz *loginBiz) Login(ctx context.Context, data userModel.LoginDTO) (access
 
 	go func() {
 		defer common.AppRecover()
-		if err := biz.service.SaveRefreshToken(ctx, refreshToken, user.Id.Hex()); err != nil {
+		if err := biz.service.SaveRefreshToken(ctx, refreshToken); err != nil {
 			panic(common.ErrSideEffectSaveRefreshToken(err))
 		}
 	}()

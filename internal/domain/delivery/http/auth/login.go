@@ -9,7 +9,6 @@ import (
 	authService "nta-blog/internal/domain/service/auth"
 	tokenStorage "nta-blog/internal/domain/storage/token"
 	userStorage "nta-blog/internal/domain/storage/user"
-	"nta-blog/internal/infrastructure/config"
 	"nta-blog/internal/lib/appctx"
 
 	"github.com/gofiber/fiber/v2"
@@ -40,7 +39,8 @@ func Login(actx appctx.AppContext) func(c *fiber.Ctx) error {
 			Domain:   "localhost",
 			Expires:  time.Now().Add(24 * time.Hour * 7),
 			HTTPOnly: true,
-			Secure:   config.Env.AppENV != "development",
+			Secure:   false,
+			SameSite: "None",
 		})
 
 		c.Status(fiber.StatusCreated)

@@ -5,6 +5,6 @@ import "nta-blog/internal/common"
 const TagCollection = "tags"
 
 type Tag struct {
-	common.CommonModal
-	Name string `bson:"name" json:"name"`
+	common.CommonModal `bson:",inline"`
+	Name               string `bson:"name" json:"name"`
 }

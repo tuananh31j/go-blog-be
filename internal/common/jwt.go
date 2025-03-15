@@ -6,29 +6,37 @@ import (
 	"nta-blog/internal/lib/logger"
 
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/mitchellh/mapstructure"
 )
 
-func VerifyJWT(tokenString, secret string) (string, error) {
+type Payload struct {
+	Id   string `json:"id"`
+	Role string `json:"role"`
+}
+
+func VerifyJWT(tokenString, secret string) (*Payload, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return secret, nil
+		return []byte(secret), nil
 	})
+	var payload Payload
 	if err != nil {
-		return "", fmt.Errorf("failed to parse token: %v", err)
+		return nil, fmt.Errorf("failed to parse token: %v", err)
 	}
 
 	if !token.Valid {
-		return "", fmt.Errorf("invalid token")
+		return nil, fmt.Errorf("invalid token")
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		username := claims["id"].(string)
-		return username, nil
+		mapstructure.Decode(claims, &payload)
+
+		return &payload, nil
 	}
 
-	return "", fmt.Errorf("failed to get claims")
+	return nil, fmt.Errorf("failed to get claims")
 }
 
 func GenerateJWT(secret string, payload map[string]string, exp int64) string {
@@ -42,6 +50,7 @@ func GenerateJWT(secret string, payload map[string]string, exp int64) string {
 		claims[key] = value
 	}
 	claims["exp"] = exp
+	claims["batchedova"] = "Em! Tính làm gì vậy em?"
 	t, err := token.SignedString([]byte(secret))
 	if err != nil {
 		logger.ZeroLog.Debug().Msg(fmt.Sprintf("JWT error>>>%v", payload))

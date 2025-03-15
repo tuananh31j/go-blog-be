@@ -12,9 +12,12 @@ import (
 
 func ListImages(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
+		token := c.Cookies("refreshToken")
+
 		cld := apctx.GetCloudinary()
 		mongoDB := apctx.GetMongoDB()
 		logger := apctx.GetLogger()
+		logger.Debug().Msgf("%v", token)
 		store := imageStorage.NewStore(mongoDB, cld)
 		service := imageService.NewListImageService(store)
 		biz := imageBusiness.NewListImagesBiz(service)

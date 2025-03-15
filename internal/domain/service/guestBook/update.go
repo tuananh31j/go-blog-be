@@ -17,7 +17,7 @@ type updateGuestBookService struct {
 	guestBookStore UpdateGuestBookStore
 }
 
-func NewUpdateGuestBookStore(guestBookStore UpdateGuestBookStore) *updateGuestBookService {
+func NewUpdateGuestBookService(guestBookStore UpdateGuestBookStore) *updateGuestBookService {
 	return &updateGuestBookService{guestBookStore: guestBookStore}
 }
 

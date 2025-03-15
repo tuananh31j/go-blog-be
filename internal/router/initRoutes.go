@@ -11,7 +11,13 @@ func InitRoutes(app *fiber.App, actx appctx.AppContext) {
 
 	auth := routerV1.Group("/auth")
 	image := routerV1.Group("/images")
+	guestBook := routerV1.Group("/guestbook")
+	blog := routerV1.Group("/blogs")
+	tag := routerV1.Group("/tags")
 
 	imageRouter(image, actx)
-	authRouter(auth, actx)
+	authRoutes(auth, actx)
+	guestBookRoutes(guestBook, actx)
+	blogRouter(blog, actx)
+	tagRoutes(tag, actx)
 }

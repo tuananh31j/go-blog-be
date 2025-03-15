@@ -7,8 +7,8 @@ import (
 )
 
 type CreateTagStore interface {
-	GetOnceTag(ctx context.Context, conditions map[string]interface{}) (*tagModel.Tag, error)
-	CreateTag(ctx context.Context, dto tagModel.TagDTO) error
+	Find(ctx context.Context, conditions map[string]interface{}) (*tagModel.Tag, error)
+	Create(ctx context.Context, dto *tagModel.Tag) error
 }
 
 type createTagService struct {
@@ -20,10 +20,10 @@ func NewCreateTagService(s CreateTagStore) *createTagService {
 }
 
 func (sv *createTagService) CheckTagExists(ctx context.Context, tagName string) error {
-	_, err := sv.store.GetOnceTag(ctx, map[string]interface{}{"name": tagName})
+	_, err := sv.store.Find(ctx, map[string]interface{}{"name": tagName})
 	return err
 }
 
-func (sv *createTagService) CreateNewTag(ctx context.Context, tag tagModel.TagDTO) error {
-	return sv.store.CreateTag(ctx, tag)
+func (sv *createTagService) CreateNewTag(ctx context.Context, tag *tagModel.Tag) error {
+	return sv.store.Create(ctx, tag)
 }

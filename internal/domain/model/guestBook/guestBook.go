@@ -10,8 +10,8 @@ import (
 const GuestBookCollection = "guest_books"
 
 type GuestBook struct {
-	common.CommonModal
-	Message string              `bson:"message" json:"message"`
-	UserId  primitive.ObjectID  `bson:"user_id" json:"user_id"`
-	Status  cnst.TStatusMessage `bson:"status" json:"status"`
+	common.CommonModal `bson:",inline"`
+	Message            string              `bson:"message" json:"message"`
+	UserId             primitive.ObjectID  `bson:"user_id" json:"user_id"`
+	Status             cnst.TStatusMessage `bson:"status" json:"status"`
 }

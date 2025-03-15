@@ -11,7 +11,7 @@ type UserStore interface {
 	CreateUser(ctx context.Context, dto *userModel.User) error
 }
 type TokenStore interface {
-	SaveRefreshToken(ctx context.Context, token, userId string) error
+	SaveRefreshToken(ctx context.Context, token string) error
 }
 
 type loginService struct {
@@ -33,6 +33,6 @@ func (sv *loginService) CreateUser(ctx context.Context, dto *userModel.User) err
 	return sv.userstore.CreateUser(ctx, dto)
 }
 
-func (sv *loginService) SaveRefreshToken(ctx context.Context, token, userId string) error {
-	return sv.tokenStore.SaveRefreshToken(ctx, token, userId)
+func (sv *loginService) SaveRefreshToken(ctx context.Context, token string) error {
+	return sv.tokenStore.SaveRefreshToken(ctx, token)
 }

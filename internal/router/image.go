@@ -8,6 +8,9 @@ import (
 )
 
 func imageRouter(router fiber.Router, actx appctx.AppContext) {
+	// router.Use(middleware.Authentication(config.Env.SecretAccessKey))
+	// router.Use(middleware.Authorization(actx, config.Env.SecretAccessKey))
+
 	router.Post("/upload", imageHttp.UploadImage(actx))
 	router.Get("/", imageHttp.ListImages(actx))
 }

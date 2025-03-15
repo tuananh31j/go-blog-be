@@ -6,14 +6,11 @@ import (
 	"sync"
 	"time"
 
-	"nta-blog/internal/common"
-	cnst "nta-blog/internal/constant"
 	blogModel "nta-blog/internal/domain/model/blog"
 	guestbookModel "nta-blog/internal/domain/model/guestBook"
 	imageModel "nta-blog/internal/domain/model/image"
 	tagModel "nta-blog/internal/domain/model/tag"
 	userModel "nta-blog/internal/domain/model/user"
-	"nta-blog/internal/lib/hashser"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -48,23 +45,23 @@ func ConnectMongo(uri string) (*mongo.Client, error) {
 
 func SetupUserCollection(db *mongo.Database) {
 	userDB := db.Collection(userModel.UserCollectionName)
-	salt := common.GenSalt()
-	password := "12345678"
-	hash := hashser.Hash(password, salt)
-	if _, err := userDB.DeleteMany(context.Background(), bson.D{}); err != nil {
-		log.Fatal(err)
-	}
+	// salt := common.GenSalt()
+	// password := "12345678"
+	// hash := hashser.Hash(password, salt)
+	// if _, err := userDB.DeleteMany(context.Background(), bson.D{}); err != nil {
+	// 	log.Fatal(err)
+	// }
 	createIndexFiled(userDB, "email")
 
-	_, err := userDB.InsertOne(context.Background(), bson.D{
-		{Key: "email", Value: "admin@gmail.com"},
-		{Key: "role", Value: cnst.Role.Admin},
-		{Key: "password", Value: hash},
-		{Key: "salt", Value: salt},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
+	// _, err := userDB.InsertOne(context.Background(), bson.D{
+	// 	{Key: "email", Value: "admin@gmail.com"},
+	// 	{Key: "role", Value: cnst.Role.Admin},
+	// 	{Key: "password", Value: hash},
+	// 	{Key: "salt", Value: salt},
+	// })
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
 func SetupBlogCollection(db *mongo.Database) {
@@ -78,7 +75,7 @@ func SetupImageCollection(db *mongo.Database) {
 
 func SetupGuestBookCollection(db *mongo.Database) {
 	guestBookDB := db.Collection(guestbookModel.GuestBookCollection)
-	createIndexFiled(guestBookDB, "user_id")
+	createIndexFiledNotUnique(guestBookDB, "user_id")
 }
 
 func SetupTagCollection(db *mongo.Database) {
@@ -89,6 +86,16 @@ func createIndexFiled(col *mongo.Collection, field string) {
 	_, err := col.Indexes().CreateOne(context.Background(), mongo.IndexModel{
 		Keys:    bson.D{{Key: field, Value: 1}},
 		Options: options.Index().SetUnique(true),
+	})
+	if err != nil {
+		panic(err)
+	}
+}
+
+func createIndexFiledNotUnique(col *mongo.Collection, field string) {
+	_, err := col.Indexes().CreateOne(context.Background(), mongo.IndexModel{
+		Keys:    bson.D{{Key: field, Value: 1}},
+		Options: options.Index().SetUnique(false),
 	})
 	if err != nil {
 		panic(err)

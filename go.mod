@@ -8,6 +8,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/joho/godotenv v1.5.1
+	github.com/mitchellh/mapstructure v1.5.0
 	github.com/redis/go-redis/v9 v9.7.1
 	github.com/rs/zerolog v1.33.0
 	go.mongodb.org/mongo-driver v1.17.3

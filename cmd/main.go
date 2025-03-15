@@ -15,14 +15,24 @@ import (
 	routes "nta-blog/internal/router"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	errsChan := make(chan error, 1)
 	app := fiber.New(config.FiberConfig(config.Env.AppENV))
-
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     "http://localhost:3000", // Origin cụ thể của Next.js
+		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
+		AllowHeaders:     "*",
+		AllowCredentials: true, // Bật để hỗ trợ cookie
+	}))
 	logger := logger.NewLogger()
+
+	if config.Env.AppENV == "development" {
+		app.Use(middleware.LoggerConfigFiber())
+	}
 
 	redisDB := db.ConnectRedis(config.Env.RedisHost, config.Env.RedisPort, config.Env.RedisPass)
 
@@ -36,6 +46,7 @@ func main() {
 	db.SetupBlogCollection(mongoDB)
 	db.SetupTagCollection(mongoDB)
 	db.SetupImageCollection(mongoDB)
+	db.SetupGuestBookCollection(mongoDB)
 
 	cld, err := db.NewCld(config.Env.CloudinaryName, config.Env.CloudinaryAPIKey, config.Env.CloudinaryAPISecret)
 	if err != nil {

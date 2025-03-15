@@ -15,7 +15,7 @@ import (
 
 type GoogleSevice interface {
 	FindOneUser(ctx context.Context, conditions map[string]interface{}) (*userModel.User, error)
-	SaveRefreshToken(ctx context.Context, token, userId string) error
+	SaveRefreshToken(ctx context.Context, token string) error
 	CreateUser(ctx context.Context, dto *userModel.User) error
 }
 
@@ -57,7 +57,7 @@ func (biz *googleLoginBiz) GoogleLogin(ctx context.Context, data userModel.Googl
 
 		go func() {
 			defer common.AppRecover()
-			if err := biz.sevice.SaveRefreshToken(ctx, refreshToken, user.Id.Hex()); err != nil {
+			if err := biz.sevice.SaveRefreshToken(ctx, refreshToken); err != nil {
 				panic(common.ErrSideEffectSaveRefreshToken(err))
 			}
 		}()
@@ -69,7 +69,7 @@ func (biz *googleLoginBiz) GoogleLogin(ctx context.Context, data userModel.Googl
 
 	go func() {
 		defer common.AppRecover()
-		if err := biz.sevice.SaveRefreshToken(ctx, refreshToken, user.Id.Hex()); err != nil {
+		if err := biz.sevice.SaveRefreshToken(ctx, refreshToken); err != nil {
 			panic(common.ErrSideEffectSaveRefreshToken(err))
 		}
 	}()

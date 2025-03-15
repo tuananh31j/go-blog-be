@@ -7,5 +7,5 @@ import (
 )
 
 func ErrorHandler(ctx *fiber.Ctx, err error) error {
-	return ctx.Status(fiber.StatusInternalServerError).JSON(common.ErrInternal(err))
+	return ctx.Status(fiber.StatusInternalServerError).JSON(common.NewCustomError(err, "Internal Server Error", "Fiber error handler"))
 }

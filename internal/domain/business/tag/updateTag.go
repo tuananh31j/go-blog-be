@@ -13,7 +13,7 @@ import (
 type UpdateTagService interface {
 	CheckTagNameExists(ctx context.Context, tagName string) error
 	CheckTagIdExists(ctx context.Context, tagId primitive.ObjectID) (*tagModel.Tag, error)
-	UpdateTag(ctx context.Context, tagId primitive.ObjectID, tag tagModel.TagDTO) error
+	UpdateTag(ctx context.Context, tagId primitive.ObjectID, newName string) error
 }
 
 type updateTagBiz struct {
@@ -33,7 +33,7 @@ func (biz *updateTagBiz) UpdateTagBiz(ctx context.Context, tagId primitive.Objec
 	if err := biz.service.CheckTagNameExists(ctx, tag.Name); err == nil && currentTag.Id != tagId {
 		return common.NewErrorResponse(err, "This name already exists!", "This name already exists!")
 	}
-	if err := biz.service.UpdateTag(ctx, tagId, tag); err != nil {
+	if err := biz.service.UpdateTag(ctx, tagId, tag.Name); err != nil {
 		return common.ErrInternal(err)
 	}
 	return nil

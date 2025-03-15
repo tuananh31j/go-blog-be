@@ -3,7 +3,6 @@ package authHttp
 import (
 	"io"
 	"net/http"
-	"time"
 
 	"nta-blog/internal/common"
 	authBusiness "nta-blog/internal/domain/business/auth"
@@ -66,19 +65,9 @@ func GoogleLogin(actx appctx.AppContext) func(c *fiber.Ctx) error {
 			return err
 		}
 
-		c.Cookie(&fiber.Cookie{
-			Name:     "refreshToken",
-			Value:    refreshToken,
-			Expires:  time.Now().Add(24 * time.Hour * 7),
-			HTTPOnly: true,
-			Secure:   config.Env.AppENV != "development",
-		})
-
-		if err := c.Status(fiber.StatusOK).JSON(common.SimpleSuccessResponse(fiber.Map{
-			"token": accessToken,
-		})); err != nil {
-			return err
-		}
-		return nil
+		return c.Status(fiber.StatusOK).JSON(common.SimpleSuccessResponse(fiber.Map{
+			"token":        accessToken,
+			"refreshToken": refreshToken,
+		}))
 	}
 }

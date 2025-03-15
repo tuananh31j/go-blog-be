@@ -3,12 +3,11 @@ package tokenStorage
 import (
 	"context"
 	"fmt"
-	"time"
 )
 
-func (s *store) SaveRefreshToken(ctx context.Context, token string) error {
+func (s *store) RemoveToken(ctx context.Context, token string) error {
 	key := fmt.Sprintf("user:%v", token)
-	cmd := s.rdb.Set(ctx, key, token, 7*24*60*60*time.Second)
+	cmd := s.rdb.Del(ctx, key)
 	if err := cmd.Err(); err != nil {
 		return err
 	}

@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
-func LoggerConfig() fiber.Handler {
+func LoggerConfigFiber() fiber.Handler {
 	return logger.New(logger.Config{
 		Output:     os.Stdout,
 		Format:     "${time} ${method} ${status} ${path} in ${latency}\n",

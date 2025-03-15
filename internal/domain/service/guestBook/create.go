@@ -10,22 +10,26 @@ import (
 )
 
 type CreateGuestBookStore interface {
-	FindOneUser(ctx context.Context, conditions map[string]interface{}) (*userModel.User, error)
 	Create(ctx context.Context, dto *guestbookModel.GuestBook) error
 }
 
-type createGuestBookService struct {
-	store CreateGuestBookStore
+type CheckUserStore interface {
+	FindOneUser(ctx context.Context, conditions map[string]interface{}) (*userModel.User, error)
 }
 
-func NewCreateGuestBookService(s CreateGuestBookStore) *createGuestBookService {
-	return &createGuestBookService{store: s}
+type createGuestBookService struct {
+	guestBookStore CreateGuestBookStore
+	userStore      CheckUserStore
+}
+
+func NewCreateGuestBookService(gbs CreateGuestBookStore, us CheckUserStore) *createGuestBookService {
+	return &createGuestBookService{guestBookStore: gbs, userStore: us}
 }
 
 func (sv *createGuestBookService) FindOneUser(ctx context.Context, userId primitive.ObjectID) (*userModel.User, error) {
-	return sv.store.FindOneUser(ctx, map[string]interface{}{"_id": userId})
+	return sv.userStore.FindOneUser(ctx, map[string]interface{}{"_id": userId})
 }
 
 func (sv *createGuestBookService) CreateMessage(ctx context.Context, dto *guestbookModel.GuestBook) error {
-	return sv.store.Create(ctx, dto)
+	return sv.guestBookStore.Create(ctx, dto)
 }
