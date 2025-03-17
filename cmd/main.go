@@ -23,7 +23,7 @@ func main() {
 	errsChan := make(chan error, 1)
 	app := fiber.New(config.FiberConfig(config.Env.AppENV))
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000",
+		AllowOrigins:     config.Env.AllowOrigin,
 		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS", // Đảm bảo có OPTIONS
 		AllowHeaders:     "Content-Type, Authorization",            // Liệt kê rõ ràng các header
 		AllowCredentials: true,                                     // Hỗ trợ cookie/token

@@ -67,7 +67,8 @@ func GoogleLogin(actx appctx.AppContext) func(c *fiber.Ctx) error {
 			Path:     "/",
 			HTTPOnly: true,
 			Secure:   config.Env.AppENV == "production",
-			SameSite: "Strict",
+			SameSite: "None",
+			Domain:   config.Env.AllowOrigin,
 			Expires:  time.Now().Add(time.Minute * 15),
 			MaxAge:   900,
 		})
@@ -78,7 +79,8 @@ func GoogleLogin(actx appctx.AppContext) func(c *fiber.Ctx) error {
 			Path:     "/",
 			HTTPOnly: true,
 			Secure:   config.Env.AppENV == "production",
-			SameSite: "Strict",
+			SameSite: "None",
+			Domain:   config.Env.AllowOrigin,
 			Expires:  time.Now().Add(24 * time.Hour * 7),
 			MaxAge:   604800,
 		})

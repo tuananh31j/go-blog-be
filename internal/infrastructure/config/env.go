@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -26,6 +27,7 @@ type env struct {
 	CloudinaryName      string
 
 	NextJSRedirectOauth string
+	AllowOrigin         string
 }
 
 var Env env
@@ -53,6 +55,7 @@ func init() {
 	Env.CloudinaryName = os.Getenv("CLOUDINARY_CLOUD_NAME")
 
 	Env.NextJSRedirectOauth = os.Getenv("NEXTJS_REDIRECT_OAUTH")
+	Env.AllowOrigin = os.Getenv("ALLOWS_ORIGIN")
 
 	GoogleConfig(Env.GoogleClientId, Env.GoogleClientSecret, Env.GoogleRedirectServer)
 }
@@ -60,6 +63,6 @@ func init() {
 func loadConfig() {
 	err := godotenv.Load()
 	if err != nil {
-		panic(err)
+		fmt.Println("Error loading .env file")
 	}
 }
