@@ -14,10 +14,16 @@ func InitRoutes(app *fiber.App, actx appctx.AppContext) {
 	guestBook := routerV1.Group("/guestbook")
 	blog := routerV1.Group("/blogs")
 	tag := routerV1.Group("/tags")
+	user := routerV1.Group("/users")
 
 	imageRouter(image, actx)
 	authRoutes(auth, actx)
 	guestBookRoutes(guestBook, actx)
 	blogRouter(blog, actx)
 	tagRoutes(tag, actx)
+	userRoutes(user, actx)
+
+	app.Get("/ping", func(c *fiber.Ctx) error {
+		return c.SendString("Pong!")
+	})
 }

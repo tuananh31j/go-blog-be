@@ -43,8 +43,6 @@ func (biz *listGuestBookBiz) GetListMessage(ctx context.Context, paging, limit u
 	if err != nil {
 		return nil, 0, common.ErrInternal(err)
 	}
-	if result == nil {
-		return []guestbookModel.GuestBook{}, 0, nil
-	}
+
 	return result, total, nil
 }

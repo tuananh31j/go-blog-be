@@ -23,10 +23,11 @@ func main() {
 	errsChan := make(chan error, 1)
 	app := fiber.New(config.FiberConfig(config.Env.AppENV))
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:3000", // Origin cụ thể của Next.js
-		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH",
-		AllowHeaders:     "*",
-		AllowCredentials: true, // Bật để hỗ trợ cookie
+		AllowOrigins:     "http://localhost:3000",
+		AllowMethods:     "GET,POST,HEAD,PUT,DELETE,PATCH,OPTIONS", // Đảm bảo có OPTIONS
+		AllowHeaders:     "Content-Type, Authorization",            // Liệt kê rõ ràng các header
+		AllowCredentials: true,                                     // Hỗ trợ cookie/token
+		ExposeHeaders:    "Content-Length",                         // Nếu cần
 	}))
 	logger := logger.NewLogger()
 
@@ -34,7 +35,7 @@ func main() {
 		app.Use(middleware.LoggerConfigFiber())
 	}
 
-	redisDB := db.ConnectRedis(config.Env.RedisHost, config.Env.RedisPort, config.Env.RedisPass)
+	redisDB := db.ConnectRedis(config.Env.RedisURL)
 
 	mongoClient, err := db.ConnectMongo(config.Env.MongoURI)
 	if err != nil {

@@ -39,7 +39,7 @@ func VerifyJWT(tokenString, secret string) (*Payload, error) {
 	return nil, fmt.Errorf("failed to get claims")
 }
 
-func GenerateJWT(secret string, payload map[string]string, exp int64) string {
+func GenerateJWT(secret string, payload map[string]interface{}, exp int64) string {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
@@ -47,7 +47,7 @@ func GenerateJWT(secret string, payload map[string]string, exp int64) string {
 	}
 
 	for key, value := range payload {
-		claims[key] = value
+		claims[key] = fmt.Sprintf("%v", value)
 	}
 	claims["exp"] = exp
 	claims["batchedova"] = "Em! Tính làm gì vậy em?"

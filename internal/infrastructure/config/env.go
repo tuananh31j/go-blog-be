@@ -7,13 +7,13 @@ import (
 )
 
 type env struct {
-	AppENV           string
-	AppHost          string
-	AppPort          string
-	MongoURI         string
-	RedisPort        string
-	RedisHost        string
-	RedisPass        string
+	AppENV   string
+	AppHost  string
+	AppPort  string
+	MongoURI string
+
+	RedisURL string
+
 	SecretAccessKey  string
 	SecretRefreshKey string
 
@@ -23,6 +23,8 @@ type env struct {
 	CloudinaryAPIKey    string
 	CloudinaryAPISecret string
 	CloudinaryName      string
+
+	NextJSRedirectOauth string
 }
 
 var Env env
@@ -34,9 +36,7 @@ func init() {
 
 	Env.MongoURI = os.Getenv("MONGO_URI")
 
-	Env.RedisPort = os.Getenv("REDIS_PORT")
-	Env.RedisHost = os.Getenv("REDIS_HOST")
-	Env.RedisPass = os.Getenv("REDIS_PASS")
+	Env.RedisURL = os.Getenv("REDIS_URL")
 
 	Env.SecretAccessKey = os.Getenv("JWT_ACCESS_TOKEN_KEY")
 	Env.SecretRefreshKey = os.Getenv("JWT_REFRESH_TOKEN_KEY")
@@ -49,6 +49,8 @@ func init() {
 	Env.CloudinaryAPIKey = os.Getenv("CLOUDINARY_API_KEY")
 	Env.CloudinaryAPISecret = os.Getenv("CLOUDINARY_API_SECRET")
 	Env.CloudinaryName = os.Getenv("CLOUDINARY_CLOUD_NAME")
+
+	Env.NextJSRedirectOauth = os.Getenv("NEXTJS_REDIRECT_OAUTH")
 
 	GoogleConfig(Env.GoogleClientId, Env.GoogleClientSecret)
 }

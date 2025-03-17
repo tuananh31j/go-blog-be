@@ -45,9 +45,6 @@ func (biz *listGuestBookForAdminBiz) GetListMessageForAdmin(ctx context.Context,
 	if err != nil {
 		return nil, 0, common.ErrInternal(err)
 	}
-	if result == nil {
-		return []guestbookModel.GuestBook{}, 0, nil
-	}
 
 	return result, total, nil
 }

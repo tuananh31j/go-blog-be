@@ -1,7 +1,6 @@
 package userModel
 
 import (
-	"fmt"
 	"time"
 
 	"nta-blog/internal/common"
@@ -19,18 +18,19 @@ type User struct {
 	Email              string              `bson:"email" json:"email"`
 	Role               cnst.TRoleAccount   `bson:"role" json:"role"`
 	Status             cnst.TStatusAccount `bson:"status" json:"status"`
+	Avt                string              `bson:"avt" json:"avt"`
 }
 
 func (u *User) CreateAccessToken() string {
 	exp := time.Now().Add(time.Minute * 10000000).Unix()
-	token := common.GenerateJWT(config.Env.SecretAccessKey, map[string]string{"id": u.Id.Hex(), "role": fmt.Sprintf("%v", u.Role)}, exp)
+	token := common.GenerateJWT(config.Env.SecretAccessKey, map[string]interface{}{"id": u.Id.Hex(), "role": u.Role}, exp)
 
 	return token
 }
 
 func (u *User) CreateRefreshToken() string {
 	exp := time.Now().Add(time.Hour * 24 * 7).Unix()
-	token := common.GenerateJWT(config.Env.SecretRefreshKey, map[string]string{"id": u.Id.Hex(), "role": string(u.Role)}, exp)
+	token := common.GenerateJWT(config.Env.SecretRefreshKey, map[string]interface{}{"id": u.Id.Hex(), "role": u.Role}, exp)
 
 	return token
 }

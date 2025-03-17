@@ -3,7 +3,6 @@ package authBusiness
 import (
 	"context"
 	"strconv"
-	"time"
 
 	"nta-blog/internal/common"
 	cnst "nta-blog/internal/constant"
@@ -15,9 +14,8 @@ import (
 )
 
 type RefreshTokenService interface {
-	SaveRefreshToken(ctx context.Context, token string) error
 	RemoveRefreshToken(ctx context.Context, token string) error
-	CheckRefeshTokenExists(ctx context.Context, token string) (string, error)
+	CheckRefeshTokenExists(ctx context.Context, userId string) (string, error)
 }
 
 type refreshTokenBiz struct {
@@ -28,23 +26,30 @@ func NewRefreshTokenBiz(sv RefreshTokenService) *refreshTokenBiz {
 	return &refreshTokenBiz{service: sv}
 }
 
-func (biz *refreshTokenBiz) SaveRefreshToken(ctx context.Context, token string) (accessToken string, refreshToken string, err error) {
+func (biz *refreshTokenBiz) RefreshToken(ctx context.Context, token string) (accessToken string, err error) {
 	var user userModel.User
 
-	oldToken, err := biz.service.CheckRefeshTokenExists(ctx, token)
-	if token != oldToken {
-		return "", "", common.ErrBadRequest(nil)
-	}
-	if err != nil {
-		return "", "", common.ErrBadRequest(err)
-	}
 	payload, err := user.VerifyToken(token, config.Env.SecretRefreshKey)
 	if err != nil {
-		return "", "", common.ErrBadRequest(err)
+		return "", common.ErrBadRequest(err)
 	}
+
+	currentToken, err := biz.service.CheckRefeshTokenExists(ctx, payload.Id)
+	if err != nil {
+		logger.ZeroLog.Debug().Err(err).Msgf("CheckRefeshTokenExists: %v", payload.Id)
+		return "", common.ErrBadRequest(err)
+	}
+	if token != currentToken {
+		return "", common.ErrBadRequest(nil)
+	}
+
+	if err != nil {
+		return "", common.ErrBadRequest(err)
+	}
+
 	objectId, err := primitive.ObjectIDFromHex(payload.Id)
 	if err != nil {
-		return "", "", common.ErrBadRequest(err)
+		return "", common.ErrBadRequest(err)
 	}
 
 	user.Id = objectId
@@ -52,22 +57,6 @@ func (biz *refreshTokenBiz) SaveRefreshToken(ctx context.Context, token string) 
 	user.Role = cnst.TRoleAccount(role)
 
 	accessToken = user.CreateAccessToken()
-	refreshToken = user.CreateRefreshToken()
-	if err := biz.service.SaveRefreshToken(ctx, refreshToken); err != nil {
-		return "", "", common.ErrInternal(err)
-	}
-	go func() {
-		defer common.AppRecover()
-		retries := 3
-		for i := 0; i < retries; i++ {
-			if err := biz.service.RemoveRefreshToken(ctx, token); err == nil {
-				break
-			}
-			if i == retries-1 {
-				time.Sleep(time.Duration(i) * time.Second)
-				logger.ZeroLog.Error().Err(err).Msg("Failed to remove refresh token after retries")
-			}
-		}
-	}()
-	return accessToken, refreshToken, nil
+
+	return accessToken, nil
 }

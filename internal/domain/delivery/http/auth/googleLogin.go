@@ -3,6 +3,7 @@ package authHttp
 import (
 	"io"
 	"net/http"
+	"time"
 
 	"nta-blog/internal/common"
 	authBusiness "nta-blog/internal/domain/business/auth"
@@ -25,13 +26,11 @@ func GoogleLogin(actx appctx.AppContext) func(c *fiber.Ctx) error {
 		logger := actx.GetLogger()
 
 		googleCon := config.GuConfig.GoogleLoginConfig
-
 		code := c.Query("code")
 
 		token, err := googleCon.Exchange(c.Context(), code)
 		if err != nil {
-			logger.Debug().Msg("Lấy token")
-
+			logger.Debug().Msg("Lấy token thất bại")
 			return c.Status(fiber.StatusInternalServerError).SendString("Failed to exchange code for token")
 		}
 
@@ -42,32 +41,48 @@ func GoogleLogin(actx appctx.AppContext) func(c *fiber.Ctx) error {
 
 		userData, err := io.ReadAll(resp.Body)
 		if err != nil {
-			logger.Debug().Msg("Lỗi json")
+			logger.Debug().Msg("Lỗi đọc dữ liệu")
 			return err
 		}
 
 		if err := sonic.Unmarshal(userData, &result); err != nil {
-			logger.Debug().Msg("Lấy unmarshal")
-
+			logger.Debug().Msg("Lỗi unmarshal")
 			return err
 		}
 
 		userStore := userStorage.NewStore(mongodb, rdb)
 		tokenStore := tokenStorage.NewStore(mongodb, rdb)
-		loginSevice := authService.NewLoginService(userStore, tokenStore)
-		biz := authBusiness.NewGoogleLoginBiz(loginSevice, logger)
+		loginService := authService.NewLoginService(userStore, tokenStore)
+		biz := authBusiness.NewGoogleLoginBiz(loginService, logger)
 
-		var accessToken, refreshToken string
-		accessToken, refreshToken, err = biz.GoogleLogin(c.Context(), result)
+		accessToken, refreshToken, err := biz.GoogleLogin(c.Context(), &result)
 		if err != nil {
-			logger.Debug().Msg("")
-
+			logger.Debug().Msg("Lỗi Google Login")
 			return err
 		}
 
-		return c.Status(fiber.StatusOK).JSON(common.SimpleSuccessResponse(fiber.Map{
-			"token":        accessToken,
-			"refreshToken": refreshToken,
-		}))
+		c.Cookie(&fiber.Cookie{
+			Name:     "accessToken",
+			Value:    accessToken,
+			Path:     "/",
+			HTTPOnly: true,
+			Secure:   config.Env.AppENV == "production",
+			SameSite: "Strict",
+			Expires:  time.Now().Add(time.Minute * 15),
+			MaxAge:   900,
+		})
+
+		c.Cookie(&fiber.Cookie{
+			Name:     "refreshToken",
+			Value:    refreshToken,
+			Path:     "/",
+			HTTPOnly: true,
+			Secure:   config.Env.AppENV == "production",
+			SameSite: "Strict",
+			Expires:  time.Now().Add(24 * time.Hour * 7),
+			MaxAge:   604800,
+		})
+
+		return c.Redirect(config.Env.NextJSRedirectOauth + accessToken + "ntadtt31012212" + common.GenSalt())
 	}
 }

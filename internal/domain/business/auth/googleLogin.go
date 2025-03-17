@@ -15,7 +15,7 @@ import (
 
 type GoogleSevice interface {
 	FindOneUser(ctx context.Context, conditions map[string]interface{}) (*userModel.User, error)
-	SaveRefreshToken(ctx context.Context, token string) error
+	SaveRefreshToken(ctx context.Context, token, userId string) error
 	CreateUser(ctx context.Context, dto *userModel.User) error
 }
 
@@ -28,7 +28,7 @@ func NewGoogleLoginBiz(sevice GoogleSevice, log *zerolog.Logger) *googleLoginBiz
 	return &googleLoginBiz{sevice: sevice, logger: log}
 }
 
-func (biz *googleLoginBiz) GoogleLogin(ctx context.Context, data userModel.GoogleLoginDTO) (accessToken string, refreshToken string, err error) {
+func (biz *googleLoginBiz) GoogleLogin(ctx context.Context, data *userModel.GoogleLoginDTO) (accessToken string, refreshToken string, err error) {
 	user, err := biz.sevice.FindOneUser(ctx, map[string]interface{}{"email": data.Email})
 	if err != nil {
 
@@ -48,6 +48,8 @@ func (biz *googleLoginBiz) GoogleLogin(ctx context.Context, data userModel.Googl
 			Email:    data.Email,
 			Password: hash,
 			Salt:     salt,
+			Status:   cnst.StatusAccount.Actived,
+			Avt:      data.Picture,
 		}
 		if err := biz.sevice.CreateUser(ctx, &newUser); err != nil {
 			return "", "", common.ErrInternal(err)
@@ -57,7 +59,7 @@ func (biz *googleLoginBiz) GoogleLogin(ctx context.Context, data userModel.Googl
 
 		go func() {
 			defer common.AppRecover()
-			if err := biz.sevice.SaveRefreshToken(ctx, refreshToken); err != nil {
+			if err := biz.sevice.SaveRefreshToken(ctx, refreshToken, newUser.Id.Hex()); err != nil {
 				panic(common.ErrSideEffectSaveRefreshToken(err))
 			}
 		}()
@@ -69,7 +71,7 @@ func (biz *googleLoginBiz) GoogleLogin(ctx context.Context, data userModel.Googl
 
 	go func() {
 		defer common.AppRecover()
-		if err := biz.sevice.SaveRefreshToken(ctx, refreshToken); err != nil {
+		if err := biz.sevice.SaveRefreshToken(ctx, refreshToken, user.Id.Hex()); err != nil {
 			panic(common.ErrSideEffectSaveRefreshToken(err))
 		}
 	}()

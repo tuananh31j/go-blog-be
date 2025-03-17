@@ -28,9 +28,19 @@ func Login(actx appctx.AppContext) func(c *fiber.Ctx) error {
 		loginSevice := authService.NewLoginService(userStore, tokenStore)
 		biz := authBusiness.NewLoginBiz(loginSevice, logger)
 
-		accessToken, refreshToken, err := biz.Login(c.Context(), payload)
+		accessToken, refreshToken, userTiny, err := biz.Login(c.Context(), payload)
 		if err != nil {
 			panic(err)
+		}
+
+		c.Status(fiber.StatusCreated)
+
+		userTinyMap := map[string]interface{}{
+			"id":    userTiny.Id,
+			"name":  userTiny.Name,
+			"email": userTiny.Email,
+			"role":  userTiny.Role,
+			"avt":   userTiny.Avt,
 		}
 		c.Cookie(&fiber.Cookie{
 			Name:     "refreshToken",
@@ -42,11 +52,6 @@ func Login(actx appctx.AppContext) func(c *fiber.Ctx) error {
 			Secure:   false,
 			SameSite: "None",
 		})
-
-		c.Status(fiber.StatusCreated)
-		if err := c.JSON(common.SimpleSuccessResponse(map[string]string{"token": accessToken})); err != nil {
-			logger.Debug().Msg(err.Error())
-		}
-		return nil
+		return c.JSON(common.SimpleSuccessResponse(map[string]interface{}{"token": accessToken, "refreshToken": refreshToken, "userTiny": userTinyMap}))
 	}
 }

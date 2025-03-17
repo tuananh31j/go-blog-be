@@ -2,21 +2,16 @@ package db
 
 import (
 	"context"
-	"fmt"
 
 	"nta-blog/internal/lib/logger"
 
 	"github.com/redis/go-redis/v9"
 )
 
-func ConnectRedis(host, port, pass string) *redis.Client {
+func ConnectRedis(url string) *redis.Client {
 	ctx := context.Background()
-	url := fmt.Sprintf("%v:%v", host, port)
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     url,
-		Password: pass,
-		DB:       0,
-	})
+	opt, _ := redis.ParseURL(url)
+	rdb := redis.NewClient(opt)
 	err := rdb.Set(ctx, "key", "value", 0).Err()
 	if err != nil {
 		panic(err)

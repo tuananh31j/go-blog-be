@@ -19,22 +19,20 @@ func RefreshToken(actx appctx.AppContext) func(c *fiber.Ctx) error {
 		tokenStore := tokenStorage.NewStore(actx.GetMongoDB(), rdb)
 		service := authService.NewRefreshTokenService(tokenStore)
 		biz := authBusiness.NewRefreshTokenBiz(service)
-		oldRefreshToken := c.Cookies("refreshToken")
-		if oldRefreshToken == "" {
+		refreshToken := c.Cookies("refreshToken")
+		if refreshToken == "" {
 			logger.Debug().Msg("refreshToken not found")
 			panic(common.ErrBadRequest(errors.New("refreshToken not found")))
 		}
 
-		accessToken, refreshToken, err := biz.SaveRefreshToken(c.Context(), oldRefreshToken)
+		accessToken, err := biz.RefreshToken(c.Context(), refreshToken)
 		if err != nil {
 			logger.Debug().Msg(err.Error())
 			panic(err)
 		}
 
 		c.Status(fiber.StatusCreated)
-		if err := c.JSON(common.SimpleSuccessResponse(map[string]string{"token": accessToken, "refreshToken": refreshToken})); err != nil {
-			logger.Debug().Msg(err.Error())
-		}
-		return nil
+
+		return c.JSON(common.SimpleSuccessResponse(map[string]string{"token": accessToken}))
 	}
 }

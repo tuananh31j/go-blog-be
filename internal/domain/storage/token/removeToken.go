@@ -5,8 +5,8 @@ import (
 	"fmt"
 )
 
-func (s *store) RemoveToken(ctx context.Context, token string) error {
-	key := fmt.Sprintf("user:%v", token)
+func (s *store) RemoveToken(ctx context.Context, userId string) error {
+	key := fmt.Sprintf("user:%v", userId)
 	cmd := s.rdb.Del(ctx, key)
 	if err := cmd.Err(); err != nil {
 		return err
