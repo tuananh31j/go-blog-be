@@ -1,6 +1,7 @@
 package authHttp
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 	"time"
@@ -14,7 +15,6 @@ import (
 	"nta-blog/internal/infrastructure/config"
 	"nta-blog/internal/lib/appctx"
 
-	"github.com/bytedance/sonic"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -45,7 +45,7 @@ func GoogleLogin(actx appctx.AppContext) func(c *fiber.Ctx) error {
 			return err
 		}
 
-		if err := sonic.Unmarshal(userData, &result); err != nil {
+		if err := json.Unmarshal(userData, &result); err != nil {
 			logger.Debug().Msg("Lỗi unmarshal")
 			return err
 		}

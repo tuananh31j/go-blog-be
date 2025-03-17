@@ -1,9 +1,10 @@
 package config
 
 import (
+	"encoding/json"
+
 	"nta-blog/internal/middleware"
 
-	"github.com/bytedance/sonic"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -13,7 +14,7 @@ func FiberConfig(apv string) fiber.Config {
 		ServerHeader:          "Blog",
 		AppName:               "Blog-API",
 		ErrorHandler:          middleware.ErrorHandler,
-		JSONEncoder:           sonic.Marshal,
-		JSONDecoder:           sonic.Unmarshal,
+		JSONEncoder:           json.Marshal,
+		JSONDecoder:           json.Unmarshal,
 	}
 }
