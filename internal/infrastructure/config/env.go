@@ -17,8 +17,9 @@ type env struct {
 	SecretAccessKey  string
 	SecretRefreshKey string
 
-	GoogleClientId     string
-	GoogleClientSecret string
+	GoogleClientId       string
+	GoogleClientSecret   string
+	GoogleRedirectServer string
 
 	CloudinaryAPIKey    string
 	CloudinaryAPISecret string
@@ -45,6 +46,7 @@ func init() {
 
 	Env.GoogleClientId = os.Getenv("GOOGLE_CLIENT_ID")
 	Env.GoogleClientSecret = os.Getenv("GOOGLE_CLIENT_SECRET")
+	Env.GoogleRedirectServer = os.Getenv("GOOGLE_REDIRECT_SERVER")
 
 	Env.CloudinaryAPIKey = os.Getenv("CLOUDINARY_API_KEY")
 	Env.CloudinaryAPISecret = os.Getenv("CLOUDINARY_API_SECRET")
@@ -52,7 +54,7 @@ func init() {
 
 	Env.NextJSRedirectOauth = os.Getenv("NEXTJS_REDIRECT_OAUTH")
 
-	GoogleConfig(Env.GoogleClientId, Env.GoogleClientSecret)
+	GoogleConfig(Env.GoogleClientId, Env.GoogleClientSecret, Env.GoogleRedirectServer)
 }
 
 func loadConfig() {
