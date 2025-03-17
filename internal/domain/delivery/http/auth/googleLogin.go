@@ -85,6 +85,6 @@ func GoogleLogin(actx appctx.AppContext) func(c *fiber.Ctx) error {
 			MaxAge:   604800,
 		})
 
-		return c.Redirect(config.Env.NextJSRedirectOauth + accessToken + "ntadtt31012212" + common.GenSalt())
+		return c.Redirect(config.Env.NextJSRedirectOauth + accessToken + "ntadtt31012212" + common.GenSalt() + "?name=" + result.Name)
 	}
 }

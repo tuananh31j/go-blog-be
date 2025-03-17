@@ -15,7 +15,7 @@ import (
 
 type RefreshTokenService interface {
 	RemoveRefreshToken(ctx context.Context, token string) error
-	CheckRefeshTokenExists(ctx context.Context, userId string) (string, error)
+	CheckRefreshTokenExists(ctx context.Context, userId string) (string, error)
 }
 
 type refreshTokenBiz struct {
@@ -34,9 +34,9 @@ func (biz *refreshTokenBiz) RefreshToken(ctx context.Context, token string) (acc
 		return "", common.ErrBadRequest(err)
 	}
 
-	currentToken, errBiz := biz.service.CheckRefeshTokenExists(ctx, payload.Id)
+	currentToken, errBiz := biz.service.CheckRefreshTokenExists(ctx, payload.Id)
 	if errBiz != nil {
-		logger.ZeroLog.Debug().Err(err).Msgf("CheckRefeshTokenExists: %v", payload.Id)
+		logger.ZeroLog.Debug().Err(err).Msgf("CheckRefreshTokenExists: %v", payload.Id)
 		return "", common.ErrBadRequest(err)
 	}
 	if token != currentToken {

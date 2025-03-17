@@ -29,7 +29,7 @@ func (biz *meBiz) GetMe(ctx context.Context, userId primitive.ObjectID) (*userMo
 	}
 	var userSimp userModel.PrivateUser = userModel.PrivateUser{
 		Id:    user.Id.Hex(),
-		Name:  user.Name,
+		Name:  user.NameFake,
 		Email: user.Email,
 		Role:  user.Role,
 		Avt:   user.Avt,

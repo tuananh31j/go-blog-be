@@ -15,6 +15,7 @@ func Authentication(accessSecret string) func(C *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		authHeader := c.Get("Authorization")
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+		logger.ZeroLog.Debug().Str("token", tokenString).Msg("Token")
 
 		if authHeader == "" || tokenString == authHeader {
 			return c.Status(fiber.StatusUnauthorized).JSON(common.NewUnauthorized(errors.New("Unauthorized"), "Unauthorized", "Token is required"))

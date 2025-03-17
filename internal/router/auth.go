@@ -14,4 +14,5 @@ func authRoutes(router fiber.Router, actx appctx.AppContext) {
 	router.Get("/google_callback", authHttp.GoogleLogin(actx))
 	router.Post("/refresh-token", authHttp.RefreshToken(actx))
 	router.Post("/logout", middleware.Authentication(config.Env.SecretAccessKey), authHttp.Logout(actx))
+	router.Post("/confirm", middleware.Authentication(config.Env.SecretAccessKey), authHttp.Confirm(actx))
 }

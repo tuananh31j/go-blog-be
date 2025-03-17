@@ -45,6 +45,7 @@ func (biz *googleLoginBiz) GoogleLogin(ctx context.Context, data *userModel.Goog
 			},
 			Role:     cnst.Role.User,
 			Name:     data.Name,
+			NameFake: data.Name,
 			Email:    data.Email,
 			Password: hash,
 			Salt:     salt,

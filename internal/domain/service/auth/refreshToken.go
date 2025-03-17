@@ -24,6 +24,6 @@ func (s *refreshTokenService) RemoveRefreshToken(ctx context.Context, userId str
 	return s.store.RemoveToken(ctx, userId)
 }
 
-func (s *refreshTokenService) CheckRefeshTokenExists(ctx context.Context, userId string) (string, error) {
+func (s *refreshTokenService) CheckRefreshTokenExists(ctx context.Context, userId string) (string, error) {
 	return s.store.FindToken(ctx, userId)
 }
