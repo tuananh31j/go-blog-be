@@ -6,14 +6,11 @@ import (
 	"sync"
 	"time"
 
-	"nta-blog/internal/common"
-	cnst "nta-blog/internal/constant"
 	blogModel "nta-blog/internal/domain/model/blog"
 	guestbookModel "nta-blog/internal/domain/model/guestBook"
 	imageModel "nta-blog/internal/domain/model/image"
 	tagModel "nta-blog/internal/domain/model/tag"
 	userModel "nta-blog/internal/domain/model/user"
-	"nta-blog/internal/lib/hashser"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -48,29 +45,29 @@ func ConnectMongo(uri string) (*mongo.Client, error) {
 
 func SetupUserCollection(db *mongo.Database) {
 	userDB := db.Collection(userModel.UserCollectionName)
-	salt := common.GenSalt()
-	password := "12345678"
-	hash := hashser.Hash(password, salt)
-	now := time.Now()
-	if _, err := userDB.DeleteMany(context.Background(), bson.D{}); err != nil {
-		log.Fatal(err)
-	}
+	// salt := common.GenSalt()
+	// password := "12345678"
+	// hash := hashser.Hash(password, salt)
+	// now := time.Now()
+	// if _, err := userDB.DeleteMany(context.Background(), bson.D{}); err != nil {
+	// log.Fatal(err)
+	// }
 	createIndexFiled(userDB, "email")
 
-	_, err := userDB.InsertOne(context.Background(), bson.D{
-		{Key: "email", Value: "admin@gmail.com"},
-		{Key: "role", Value: cnst.Role.Admin},
-		{Key: "password", Value: hash},
-		{Key: "salt", Value: salt},
-		{Key: "created_at", Value: &now},
-		{Key: "updated_at", Value: &now},
-		{Key: "name", Value: "Admin"},
-		{Key: "status", Value: cnst.StatusAccount.Actived},
-		{Key: "avt", Value: "ok"},
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
+	// _, err := userDB.InsertOne(context.Background(), bson.D{
+	// 	{Key: "email", Value: "admin@gmail.com"},
+	// 	{Key: "role", Value: cnst.Role.Admin},
+	// 	{Key: "password", Value: hash},
+	// 	{Key: "salt", Value: salt},
+	// 	{Key: "created_at", Value: &now},
+	// 	{Key: "updated_at", Value: &now},
+	// 	{Key: "name", Value: "Admin"},
+	// 	{Key: "status", Value: cnst.StatusAccount.Actived},
+	// 	{Key: "avt", Value: "ok"},
+	// })
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
 func SetupBlogCollection(db *mongo.Database) {
@@ -85,6 +82,9 @@ func SetupImageCollection(db *mongo.Database) {
 func SetupGuestBookCollection(db *mongo.Database) {
 	guestBookDB := db.Collection(guestbookModel.GuestBookCollection)
 	createIndexFiledNotUnique(guestBookDB, "user_id")
+	// if _, err := guestBookDB.DeleteMany(context.Background(), bson.D{}); err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
 func SetupTagCollection(db *mongo.Database) {
