@@ -9,30 +9,28 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-type ListBlogForAdminService interface {
+type ListBlogService interface {
 	List(ctx context.Context, pipeline bson.A) ([]blogModel.Blog, error)
 }
 
-type listBlogForAdminBiz struct {
+type listBlogBiz struct {
 	service ListBlogService
 }
 
-func NewListBlogForAdminBiz(service ListBlogService) *listBlogBiz {
+func NewListBlogBiz(service ListBlogService) *listBlogBiz {
 	return &listBlogBiz{service: service}
 }
 
-func (biz *listBlogBiz) ListBlogForAdmin(ctx context.Context) ([]map[string]interface{}, error) {
+func (biz *listBlogBiz) ListBlog(ctx context.Context) ([]map[string]interface{}, error) {
 	var pipeline bson.A = bson.A{}
+	pipeline = append(pipeline, bson.M{"$match": bson.M{"status": 1}})
 	pipeline = append(pipeline, bson.M{"$lookup": bson.M{
 		"from":         "tags",
 		"localField":   "tag_ids",
 		"foreignField": "_id",
 		"as":           "tags",
 	}})
-	// pipeline = append(pipeline, bson.M{"$unwind": bson.M{
-	// 	"path":                       "$tags",
-	// 	"preserveNullAndEmptyArrays": true,
-	// }})
+
 	pipeline = append(pipeline, bson.M{"$lookup": bson.M{
 		"from":         "users",
 		"localField":   "user_id",
@@ -47,7 +45,6 @@ func (biz *listBlogBiz) ListBlogForAdmin(ctx context.Context) ([]map[string]inte
 		"title":     1,
 		"summary":   1,
 		"thumbnail": 1,
-		"status":    1,
 		"tags": bson.M{"$map": bson.M{
 			"input": "$tags",
 			"as":    "tag",
@@ -73,7 +70,6 @@ func (biz *listBlogBiz) ListBlogForAdmin(ctx context.Context) ([]map[string]inte
 			"title":      blog.Title,
 			"summary":    blog.Summary,
 			"thumbnail":  blog.Thumbnail,
-			"status":     blog.Status,
 			"tags":       blog.Tags,
 			"created_at": blog.CreatedAt,
 		}

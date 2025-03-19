@@ -37,7 +37,11 @@ func CreateBlog(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 
 		serviceBlog := blogService.NewCreateBlogService(tagStore, userStore, blogStore)
 		biz := blogBusiness.NewCreateBlogBiz(serviceBlog)
-		biz.CreateBlog(c.Context(), &payload)
+		err = biz.CreateBlog(c.Context(), &payload)
+		if err != nil {
+			logger.Err(err).Msg("Failed to create blog")
+			panic(err)
+		}
 		return c.Status(fiber.StatusCreated).JSON(common.SimpleSuccessResponse("Blog created successfully"))
 	}
 }

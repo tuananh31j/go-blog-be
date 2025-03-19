@@ -41,11 +41,11 @@ func (biz *loginBiz) Login(ctx context.Context, data userModel.LoginDTO) (access
 	accessToken = user.CreateAccessToken()
 	refreshToken = user.CreateRefreshToken()
 	userTiny = &userModel.PrivateUser{
-		Id:    user.Id.Hex(),
-		Name:  user.Name,
-		Email: user.Email,
-		Role:  user.Role,
-		Avt:   user.Avt,
+		Id:       user.Id.Hex(),
+		NameFake: user.NameFake,
+		Email:    user.Email,
+		Role:     user.Role,
+		Avt:      user.Avt,
 	}
 
 	go func() {

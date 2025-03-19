@@ -1,6 +1,10 @@
 package blogHttp
 
 import (
+	"nta-blog/internal/common"
+	blogBusiness "nta-blog/internal/domain/business/blog"
+	blogService "nta-blog/internal/domain/service/blog"
+	blogStorage "nta-blog/internal/domain/storage/blog"
 	"nta-blog/internal/lib/appctx"
 
 	"github.com/gofiber/fiber/v2"
@@ -8,6 +12,17 @@ import (
 
 func ListBlogForAdmin(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		return nil
+		logger := apctx.GetLogger()
+		mongodb := apctx.GetMongoDB()
+
+		store := blogStorage.NewStore(mongodb)
+		service := blogService.NewListBlogStore(store)
+		biz := blogBusiness.NewListBlogBiz(service)
+		result, err := biz.ListBlogForAdmin(c.Context())
+		if err != nil {
+			logger.Err(err).Msg("Failed to get list blog")
+			panic(err)
+		}
+		return c.Status(fiber.StatusOK).JSON(common.SimpleSuccessResponse(result))
 	}
 }

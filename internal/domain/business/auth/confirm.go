@@ -42,11 +42,11 @@ func (biz *confirmBiz) Confirm(ctx context.Context, userId primitive.ObjectID, U
 		return "", nil, err
 	}
 	userTiny := userModel.PrivateUser{
-		Id:    userId.Hex(),
-		Name:  UserName,
-		Email: userstore.Email,
-		Role:  userstore.Role,
-		Avt:   userstore.Avt,
+		Id:       userId.Hex(),
+		NameFake: UserName,
+		Email:    userstore.Email,
+		Role:     userstore.Role,
+		Avt:      userstore.Avt,
 	}
 
 	return refreshToken, &userTiny, nil

@@ -37,7 +37,7 @@ func Login(actx appctx.AppContext) func(c *fiber.Ctx) error {
 
 		userTinyMap := map[string]interface{}{
 			"id":    userTiny.Id,
-			"name":  userTiny.Name,
+			"name":  userTiny.NameFake,
 			"email": userTiny.Email,
 			"role":  userTiny.Role,
 			"avt":   userTiny.Avt,

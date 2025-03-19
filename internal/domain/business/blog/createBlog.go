@@ -55,5 +55,9 @@ func (biz *createBlogBiz) CreateBlog(ctx context.Context, dto *blogModel.CreateB
 	if err := biz.service.CheckUserExists(ctx, dto.UserId); err != nil {
 		return err
 	}
-	return biz.service.Create(ctx, &blog)
+	err := biz.service.Create(ctx, &blog)
+	if err != nil {
+		return common.ErrInternal(err)
+	}
+	return nil
 }

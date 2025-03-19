@@ -37,6 +37,9 @@ func ListMessage(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 			logger.Err(err).Msg("Failed to get list message")
 			panic(err)
 		}
+		// for _, item := range data {
+		// 	item.Message = common.Sanitize(item.Message)
+		// }
 
 		return c.Status(fiber.StatusOK).JSON(common.NewSuccessResponse(data, page, total, map[string]interface{}{"limit": limit}))
 	}

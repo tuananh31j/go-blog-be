@@ -1,13 +1,43 @@
 package blogHttp
 
 import (
+	"strconv"
+
+	"nta-blog/internal/common"
+	blogBusiness "nta-blog/internal/domain/business/blog"
+	blogService "nta-blog/internal/domain/service/blog"
+	blogStorage "nta-blog/internal/domain/storage/blog"
 	"nta-blog/internal/lib/appctx"
 
 	"github.com/gofiber/fiber/v2"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func DetailsBlog(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		return nil
+		logger := apctx.GetLogger()
+		mongodb := apctx.GetMongoDB()
+		isForMetadata, err := strconv.ParseBool(c.Query("metadata", "false"))
+		if err != nil {
+			logger.Debug().Err(err).Msg("Failed to parse metadata query parameter")
+			isForMetadata = false
+		}
+		id := c.Params("id")
+		objId, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			logger.Debug().Err(err).Msg("Failed to convert id to object id")
+			panic(err)
+		}
+
+		store := blogStorage.NewStore(mongodb)
+		service := blogService.NewDetailsBlogService(store)
+		biz := blogBusiness.NewDetailsBlogBiz(service)
+		result, err := biz.FindDetailsBlog(c.Context(), objId, isForMetadata)
+		if err != nil {
+			logger.Err(err).Msg("Failed to get details blog")
+			panic(err)
+		}
+
+		return c.Status(fiber.StatusOK).JSON(common.SimpleSuccessResponse(result))
 	}
 }

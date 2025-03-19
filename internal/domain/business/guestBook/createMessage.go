@@ -31,7 +31,7 @@ func (biz *createGuestBookBiz) CreateMessage(ctx context.Context, msg string, us
 	var message guestbookModel.GuestBook
 	message.Message = msg
 	message.UserId = userId
-	message.Status = cnst.StatusMessage.Pending
+	message.Status = cnst.StatusMessage.Actived
 	now := time.Now()
 	message.CreatedAt = &now
 	message.UpdatedAt = &now

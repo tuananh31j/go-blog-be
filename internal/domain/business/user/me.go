@@ -28,11 +28,11 @@ func (biz *meBiz) GetMe(ctx context.Context, userId primitive.ObjectID) (*userMo
 		return nil, common.ErrBadRequest(err)
 	}
 	var userSimp userModel.PrivateUser = userModel.PrivateUser{
-		Id:    user.Id.Hex(),
-		Name:  user.NameFake,
-		Email: user.Email,
-		Role:  user.Role,
-		Avt:   user.Avt,
+		Id:       user.Id.Hex(),
+		NameFake: user.NameFake,
+		Email:    user.Email,
+		Role:     user.Role,
+		Avt:      user.Avt,
 	}
 
 	return &userSimp, nil

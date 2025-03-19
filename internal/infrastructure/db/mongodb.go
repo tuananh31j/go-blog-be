@@ -72,7 +72,7 @@ func SetupUserCollection(db *mongo.Database) {
 
 func SetupBlogCollection(db *mongo.Database) {
 	blogDB := db.Collection(blogModel.BlogCollection)
-	createIndexFiled(blogDB, "tag_ids")
+	createIndexFiledNotUnique(blogDB, "tag_ids")
 }
 
 func SetupImageCollection(db *mongo.Database) {

@@ -12,8 +12,8 @@ const GuestBookCollection = "guest_books"
 
 type GuestBook struct {
 	common.CommonModal `bson:",inline"`
-	Message            string                `bson:"message" json:"message"`
-	UserId             primitive.ObjectID    `bson:"user_id" json:"user_id"`
-	Status             cnst.TStatusMessage   `bson:"status" json:"status"`
-	User               userModel.PrivateUser `bson:"user,omitempty" json:"user,omitempty"`
+	Message            string                 `bson:"message" json:"message"`
+	UserId             primitive.ObjectID     `bson:"user_id" json:"user_id"`
+	Status             cnst.TStatusMessage    `bson:"status" json:"status"`
+	User               *userModel.PrivateUser `bson:",omitempty json:user,omitempty" json:"user,omitempty"`
 }
