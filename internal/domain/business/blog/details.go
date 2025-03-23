@@ -29,28 +29,6 @@ func (biz *detailsBlogBiz) FindDetailsBlog(ctx context.Context, blogId primitive
 	if err != nil {
 		return nil, err
 	}
-	var pipeline bson.A = bson.A{}
-	pipeline = append(pipeline, bson.M{"$match": bson.M{"status": 1, "_id": bson.M{"$ne": blogId}}})
-	pipeline = append(pipeline, bson.M{"$limit": 5})
-
-	pipeline = append(pipeline, bson.M{"$project": bson.M{
-		"_id":       1,
-		"title":     1,
-		"thumbnail": 1,
-	}})
-	pipeline = append(pipeline, bson.M{"$sort": bson.M{"_id": -1}})
-	queryResult, err := biz.service.ListBlog(ctx, pipeline)
-	if err != nil {
-		return nil, common.ErrInternal(err)
-	}
-	relatedBlog := []map[string]interface{}{}
-	for _, blog := range queryResult {
-		relatedBlog = append(relatedBlog, map[string]interface{}{
-			"id":        blog.Id.Hex(),
-			"title":     blog.Title,
-			"thumbnail": blog.Thumbnail,
-		})
-	}
 
 	if isForMetadata {
 		result = map[string]interface{}{
@@ -60,6 +38,28 @@ func (biz *detailsBlogBiz) FindDetailsBlog(ctx context.Context, blogId primitive
 			"thumbnail": blog.Thumbnail,
 		}
 	} else {
+		var pipeline bson.A = bson.A{}
+		pipeline = append(pipeline, bson.M{"$match": bson.M{"status": 1, "_id": bson.M{"$ne": blogId}}})
+		pipeline = append(pipeline, bson.M{"$limit": 5})
+
+		pipeline = append(pipeline, bson.M{"$project": bson.M{
+			"_id":       1,
+			"title":     1,
+			"thumbnail": 1,
+		}})
+		pipeline = append(pipeline, bson.M{"$sort": bson.M{"_id": -1}})
+		queryResult, err := biz.service.ListBlog(ctx, pipeline)
+		if err != nil {
+			return nil, common.ErrInternal(err)
+		}
+		relatedBlog := []map[string]interface{}{}
+		for _, blog := range queryResult {
+			relatedBlog = append(relatedBlog, map[string]interface{}{
+				"id":        blog.Id.Hex(),
+				"title":     blog.Title,
+				"thumbnail": blog.Thumbnail,
+			})
+		}
 		result = map[string]interface{}{
 			"id":         blog.Id.Hex(),
 			"title":      blog.Title,

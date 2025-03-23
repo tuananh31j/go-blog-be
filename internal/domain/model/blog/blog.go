@@ -21,6 +21,7 @@ type Blog struct {
 	User               *userModel.PrivateUser `bson:",omitempty" json:"user,omitempty"`
 	Status             cnst.TStatusBlog       `bson:"status" json:"status"`
 	TagIds             []primitive.ObjectID   `bson:"tag_ids"`
+	Type               cnst.IBlogType         `bson:"type"`
 	Tags               []tagModel.Tag         `bson:",omitempty" json:"tags,omitempty"`
 }
 
@@ -32,4 +33,5 @@ type CreateBlogPayload struct {
 	UserId    primitive.ObjectID
 	TagIds    []string         `json:"tag_ids"`
 	Status    cnst.TStatusBlog `json:"status"`
+	Type      cnst.IBlogType   `json:"type"`
 }

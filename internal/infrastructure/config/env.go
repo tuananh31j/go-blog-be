@@ -28,6 +28,9 @@ type env struct {
 
 	NextJSRedirectOauth string
 	AllowOrigin         string
+
+	EmailAccount    string
+	PasswordAccount string
 }
 
 var Env env
@@ -56,6 +59,9 @@ func init() {
 
 	Env.NextJSRedirectOauth = os.Getenv("NEXTJS_REDIRECT_OAUTH")
 	Env.AllowOrigin = os.Getenv("ALLOWS_ORIGIN")
+
+	Env.EmailAccount = os.Getenv("EMAIL_ACCOUNT")
+	Env.PasswordAccount = os.Getenv("PASSWORD_ACCOUNT")
 
 	GoogleConfig(Env.GoogleClientId, Env.GoogleClientSecret, Env.GoogleRedirectServer)
 }

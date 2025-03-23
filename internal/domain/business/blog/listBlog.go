@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"nta-blog/internal/common"
+	cnst "nta-blog/internal/constant"
 	blogModel "nta-blog/internal/domain/model/blog"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -21,9 +22,9 @@ func NewListBlogBiz(service ListBlogService) *listBlogBiz {
 	return &listBlogBiz{service: service}
 }
 
-func (biz *listBlogBiz) ListBlog(ctx context.Context) ([]map[string]interface{}, error) {
+func (biz *listBlogBiz) ListBlog(ctx context.Context, blogType cnst.IBlogType) ([]map[string]interface{}, error) {
 	var pipeline bson.A = bson.A{}
-	pipeline = append(pipeline, bson.M{"$match": bson.M{"status": 1}})
+	pipeline = append(pipeline, bson.M{"$match": bson.M{"status": 1, "type": blogType}})
 	pipeline = append(pipeline, bson.M{"$lookup": bson.M{
 		"from":         "tags",
 		"localField":   "tag_ids",

@@ -51,6 +51,7 @@ func (biz *createBlogBiz) CreateBlog(ctx context.Context, dto *blogModel.CreateB
 	blog.CreatedAt = &now
 	blog.UpdatedAt = &now
 	blog.Id = primitive.NewObjectID()
+	blog.Type = dto.Type
 
 	if err := biz.service.CheckUserExists(ctx, dto.UserId); err != nil {
 		return err

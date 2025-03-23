@@ -45,29 +45,8 @@ func ConnectMongo(uri string) (*mongo.Client, error) {
 
 func SetupUserCollection(db *mongo.Database) {
 	userDB := db.Collection(userModel.UserCollectionName)
-	// salt := common.GenSalt()
-	// password := "12345678"
-	// hash := hashser.Hash(password, salt)
-	// now := time.Now()
-	// if _, err := userDB.DeleteMany(context.Background(), bson.D{}); err != nil {
-	// log.Fatal(err)
-	// }
-	createIndexFiled(userDB, "email")
 
-	// _, err := userDB.InsertOne(context.Background(), bson.D{
-	// 	{Key: "email", Value: "admin@gmail.com"},
-	// 	{Key: "role", Value: cnst.Role.Admin},
-	// 	{Key: "password", Value: hash},
-	// 	{Key: "salt", Value: salt},
-	// 	{Key: "created_at", Value: &now},
-	// 	{Key: "updated_at", Value: &now},
-	// 	{Key: "name", Value: "Admin"},
-	// 	{Key: "status", Value: cnst.StatusAccount.Actived},
-	// 	{Key: "avt", Value: "ok"},
-	// })
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	createIndexFiled(userDB, "email")
 }
 
 func SetupBlogCollection(db *mongo.Database) {

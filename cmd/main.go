@@ -3,19 +3,27 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
+	"nta-blog/internal/common"
+	cnst "nta-blog/internal/constant"
+	userModel "nta-blog/internal/domain/model/user"
 	"nta-blog/internal/infrastructure/config"
 	"nta-blog/internal/infrastructure/db"
 	"nta-blog/internal/lib/appctx"
+	"nta-blog/internal/lib/hashser"
 	"nta-blog/internal/lib/logger"
 	"nta-blog/internal/middleware"
 	routes "nta-blog/internal/router"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func main() {
@@ -48,6 +56,11 @@ func main() {
 	db.SetupTagCollection(mongoDB)
 	db.SetupImageCollection(mongoDB)
 	db.SetupGuestBookCollection(mongoDB)
+
+	if config.Env.AppENV == "production" {
+		userCol := mongoDB.Collection(userModel.UserCollectionName)
+		setUpAccuntAdmin(userCol, config.Env.EmailAccount, config.Env.PasswordAccount)
+	}
 
 	cld, err := db.NewCld(config.Env.CloudinaryName, config.Env.CloudinaryAPIKey, config.Env.CloudinaryAPISecret)
 	if err != nil {
@@ -101,5 +114,33 @@ func handleShutdown(ctx context.Context, app *fiber.App, errsChan <-chan error) 
 		fmt.Printf("Server is error!")
 	case <-ctx.Done():
 		fmt.Printf("Server exiting by context cancellation!")
+	}
+}
+
+func setUpAccuntAdmin(userCol *mongo.Collection, email, pass string) {
+	salt := common.GenSalt()
+	hash := hashser.Hash(pass, salt)
+	now := time.Now()
+	payload := bson.D{
+		{Key: "email", Value: email},
+		{Key: "role", Value: cnst.Role.Admin},
+		{Key: "password", Value: hash},
+		{Key: "salt", Value: salt},
+		{Key: "created_at", Value: &now},
+		{Key: "updated_at", Value: &now},
+		{Key: "name", Value: "Admin"},
+		{Key: "name_fake", Value: "Admin"},
+		{Key: "status", Value: cnst.StatusAccount.Actived},
+		{Key: "avt", Value: "https://avatars.githubusercontent.com/u/132194452?v=4"},
+	}
+
+	result := userCol.FindOneAndUpdate(context.Background(), bson.M{"email": config.Env.EmailAccount}, payload)
+
+	user := bson.D{}
+	if err := result.Decode(&user); err != nil {
+		_, err := userCol.InsertOne(context.Background(), payload)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }
