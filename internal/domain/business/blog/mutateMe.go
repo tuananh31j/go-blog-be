@@ -11,21 +11,21 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type CreateBlogService interface {
+type MutateMeService interface {
 	CheckTagExists(ctx context.Context, tapId primitive.ObjectID) error
 	CheckUserExists(ctx context.Context, userId primitive.ObjectID) error
 	Create(ctx context.Context, dto *blogModel.Blog) error
 }
 
-type createBlogBiz struct {
-	service CreateBlogService
+type mutateMeBiz struct {
+	service MutateMeService
 }
 
-func NewCreateBlogBiz(service CreateBlogService) *createBlogBiz {
-	return &createBlogBiz{service: service}
+func NewMutateMeBiz(service MutateMeService) *mutateMeBiz {
+	return &mutateMeBiz{service: service}
 }
 
-func (biz *createBlogBiz) CreateBlog(ctx context.Context, dto *blogModel.CreatePayload) error {
+func (biz *mutateMeBiz) MutateMe(ctx context.Context, dto *blogModel.CreatePayload) error {
 	var blog blogModel.Blog
 	now := time.Now()
 
@@ -52,7 +52,7 @@ func (biz *createBlogBiz) CreateBlog(ctx context.Context, dto *blogModel.CreateP
 	blog.CreatedAt = &now
 	blog.UpdatedAt = &now
 	blog.Id = primitive.NewObjectID()
-	blog.Type = cnst.BlogTypeConstant.Post
+	blog.Type = cnst.BlogTypeConstant.Me
 
 	if err := biz.service.CheckUserExists(ctx, dto.UserId); err != nil {
 		return err

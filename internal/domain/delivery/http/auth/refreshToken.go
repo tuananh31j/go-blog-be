@@ -5,8 +5,9 @@ import (
 
 	"nta-blog/internal/common"
 	authBusiness "nta-blog/internal/domain/business/auth"
-	authService "nta-blog/internal/domain/service/auth"
+	"nta-blog/internal/domain/service"
 	tokenStorage "nta-blog/internal/domain/storage/token"
+	userStorage "nta-blog/internal/domain/storage/user"
 	"nta-blog/internal/lib/appctx"
 
 	"github.com/gofiber/fiber/v2"
@@ -17,7 +18,8 @@ func RefreshToken(actx appctx.AppContext) func(c *fiber.Ctx) error {
 		rdb := actx.GetRedis()
 		logger := actx.GetLogger()
 		tokenStore := tokenStorage.NewStore(actx.GetMongoDB(), rdb)
-		service := authService.NewRefreshTokenService(tokenStore)
+		userStore := userStorage.NewStore(actx.GetMongoDB(), rdb)
+		service := service.NewAuthService(userStore, tokenStore)
 		biz := authBusiness.NewRefreshTokenBiz(service)
 		refreshToken := c.Cookies("refreshToken")
 		if refreshToken == "" {

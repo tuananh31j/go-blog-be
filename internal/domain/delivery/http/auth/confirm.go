@@ -3,7 +3,7 @@ package authHttp
 import (
 	"nta-blog/internal/common"
 	authBusiness "nta-blog/internal/domain/business/auth"
-	authService "nta-blog/internal/domain/service/auth"
+	"nta-blog/internal/domain/service"
 	tokenStorage "nta-blog/internal/domain/storage/token"
 	userStorage "nta-blog/internal/domain/storage/user"
 	"nta-blog/internal/lib/appctx"
@@ -32,7 +32,7 @@ func Confirm(actx appctx.AppContext) func(c *fiber.Ctx) error {
 		mongodb := actx.GetMongoDB()
 		userStore := userStorage.NewStore(mongodb, rdb)
 		tokenStore := tokenStorage.NewStore(mongodb, rdb)
-		confirmService := authService.NewConfirmService(userStore, tokenStore)
+		confirmService := service.NewAuthService(userStore, tokenStore)
 		biz := authBusiness.NewConfirmBiz(confirmService)
 
 		refreshToken, userTiny, err := biz.Confirm(c.Context(), userId, payload.Name)

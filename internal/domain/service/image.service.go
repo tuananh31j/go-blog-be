@@ -1,23 +1,23 @@
-package imageService
+package service
 
 import (
 	"context"
 	"mime/multipart"
 
+	repository "nta-blog/internal/domain/interface"
 	imageModel "nta-blog/internal/domain/model/image"
 )
 
-type UploadStore interface {
-	UploadFile(ctx context.Context, file multipart.File) (*imageModel.UploadResFormCld, error)
-	SaveImage(ctx context.Context, image *imageModel.Image) error
-}
-
 type imageService struct {
-	store UploadStore
+	store repository.ImageRepository
 }
 
-func NewUploadService(store UploadStore) *imageService {
+func NewImageService(store repository.ImageRepository) *imageService {
 	return &imageService{store: store}
+}
+
+func (sv *imageService) GetListImage(ctx context.Context) ([]imageModel.Image, error) {
+	return sv.store.ListImages(ctx)
 }
 
 func (s *imageService) UploadFile(ctx context.Context, file multipart.File) (*imageModel.UploadResFormCld, error) {

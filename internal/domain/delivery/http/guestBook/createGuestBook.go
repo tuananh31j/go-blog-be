@@ -3,7 +3,7 @@ package guestBookHttp
 import (
 	"nta-blog/internal/common"
 	guestbookBusiness "nta-blog/internal/domain/business/guestBook"
-	guestbookService "nta-blog/internal/domain/service/guestBook"
+	"nta-blog/internal/domain/service"
 	guestBookStorage "nta-blog/internal/domain/storage/guestBook"
 	userStorage "nta-blog/internal/domain/storage/user"
 	"nta-blog/internal/lib/appctx"
@@ -35,7 +35,7 @@ func CreateMessage(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 
 		guestBookStore := guestBookStorage.NewStore(mongoDB)
 		userStore := userStorage.NewStore(mongoDB, rdb)
-		service := guestbookService.NewCreateGuestBookService(guestBookStore, userStore)
+		service := service.NewGuestBookService(guestBookStore, userStore)
 		biz := guestbookBusiness.NewCreateGuestBookBiz(service, logger)
 		err := biz.CreateMessage(c.Context(), payload.Message, userId)
 		if err != nil {

@@ -4,7 +4,7 @@ import (
 	"nta-blog/internal/common"
 	tagBusiness "nta-blog/internal/domain/business/tag"
 	tagModel "nta-blog/internal/domain/model/tag"
-	tagService "nta-blog/internal/domain/service/tag"
+	"nta-blog/internal/domain/service"
 	tagStorage "nta-blog/internal/domain/storage/tag"
 	"nta-blog/internal/lib/appctx"
 
@@ -22,7 +22,7 @@ func CreateTag(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 		}
 
 		tagStore := tagStorage.NewStore(mongodb)
-		tagService := tagService.NewCreateTagService(tagStore)
+		tagService := service.NewTagService(tagStore)
 		biz := tagBusiness.NewCreateTagBiz(tagService)
 		err := biz.CreateNewTag(c.Context(), &payload)
 		if err != nil {

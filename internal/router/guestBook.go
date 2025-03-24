@@ -10,10 +10,8 @@ import (
 )
 
 func guestBookRoutes(router fiber.Router, actx appctx.AppContext) {
-	router.Use(middleware.Authentication(config.Env.SecretAccessKey))
-
-	router.Post("/", guestBookHttp.CreateMessage(actx))
-	router.Get("/admin", middleware.Authorization(actx, config.Env.SecretAccessKey), guestBookHttp.ListGuestBookForAdmin(actx))
+	router.Post("/", middleware.Authentication(config.Env.SecretAccessKey), guestBookHttp.CreateMessage(actx))
+	router.Get("/admin", middleware.Authentication(config.Env.SecretAccessKey), middleware.Authorization(actx, config.Env.SecretAccessKey), guestBookHttp.ListGuestBookForAdmin(actx))
 	router.Get("/", guestBookHttp.ListMessage(actx))
-	router.Put("/:id", middleware.Authorization(actx, config.Env.SecretAccessKey), guestBookHttp.UpdateMessage(actx))
+	router.Put("/:id", middleware.Authentication(config.Env.SecretAccessKey), middleware.Authorization(actx, config.Env.SecretAccessKey), guestBookHttp.UpdateMessage(actx))
 }

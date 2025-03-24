@@ -25,7 +25,7 @@ type Blog struct {
 	Tags               []tagModel.Tag         `bson:",omitempty" json:"tags,omitempty"`
 }
 
-type CreateBlogPayload struct {
+type CreatePayload struct {
 	Thumbnail string `json:"thumbnail"`
 	Summary   string `json:"summary"`
 	Title     string `json:"title"`

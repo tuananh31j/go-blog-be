@@ -5,8 +5,9 @@ import (
 
 	"nta-blog/internal/common"
 	guestbookBusiness "nta-blog/internal/domain/business/guestBook"
-	guestbookService "nta-blog/internal/domain/service/guestBook"
+	"nta-blog/internal/domain/service"
 	guestBookStorage "nta-blog/internal/domain/storage/guestBook"
+	userStorage "nta-blog/internal/domain/storage/user"
 	"nta-blog/internal/lib/appctx"
 
 	"github.com/gofiber/fiber/v2"
@@ -16,12 +17,14 @@ func ListMessage(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		logger := apctx.GetLogger()
 		mongodb := apctx.GetMongoDB()
+		rdb := apctx.GetRedis()
 		paging := c.Query("page")
 		limit := c.Query("limit")
 
-		storeGuestBook := guestBookStorage.NewStore(mongodb)
-		serviceGuestBook := guestbookService.NewListGuestBookService(storeGuestBook)
-		biz := guestbookBusiness.NewListGuestBookBiz(serviceGuestBook)
+		guestBookStore := guestBookStorage.NewStore(mongodb)
+		userStore := userStorage.NewStore(mongodb, rdb)
+		service := service.NewGuestBookService(guestBookStore, userStore)
+		biz := guestbookBusiness.NewListGuestBookBiz(service)
 		limitInt, err := strconv.Atoi(limit)
 		length := uint32(limitInt)
 		if err != nil {

@@ -2,8 +2,9 @@ package guestBookHttp
 
 import (
 	guestbookBusiness "nta-blog/internal/domain/business/guestBook"
-	guestbookService "nta-blog/internal/domain/service/guestBook"
+	"nta-blog/internal/domain/service"
 	guestBookStorage "nta-blog/internal/domain/storage/guestBook"
+	userStorage "nta-blog/internal/domain/storage/user"
 	"nta-blog/internal/lib/appctx"
 	"nta-blog/internal/lib/logger"
 
@@ -17,7 +18,8 @@ type PlaceHolder struct {
 
 func UpdateMessage(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		mongoDB := apctx.GetMongoDB()
+		mongodb := apctx.GetMongoDB()
+		rdb := apctx.GetRedis()
 		logger := logger.NewLogger()
 
 		id := c.Params("id")
@@ -33,8 +35,9 @@ func UpdateMessage(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 			logger.Debug().Err(err).Msg("Failed to convert id to object id")
 			panic(err)
 		}
-		store := guestBookStorage.NewStore(mongoDB)
-		service := guestbookService.NewUpdateGuestBookService(store)
+		guestBookStore := guestBookStorage.NewStore(mongodb)
+		userStore := userStorage.NewStore(mongodb, rdb)
+		service := service.NewGuestBookService(guestBookStore, userStore)
 		biz := guestbookBusiness.NewUpdateStatusBiz(service)
 		biz.UpdateStatus(c.Context(), objId, payload.Status)
 		return nil

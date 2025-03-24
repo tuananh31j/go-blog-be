@@ -3,7 +3,7 @@ package imageHttp
 import (
 	"nta-blog/internal/common"
 	imageBusiness "nta-blog/internal/domain/business/image"
-	imageService "nta-blog/internal/domain/service/image"
+	"nta-blog/internal/domain/service"
 	imageStorage "nta-blog/internal/domain/storage/image"
 	"nta-blog/internal/lib/appctx"
 
@@ -22,7 +22,7 @@ func UploadImage(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 		}
 
 		store := imageStorage.NewStore(mongoDB, cld)
-		service := imageService.NewUploadService(store)
+		service := service.NewImageService(store)
 		biz := imageBusiness.NewUploadImageBiz(service)
 
 		imageData, err := biz.UploadImage(c.Context(), fileHeader)

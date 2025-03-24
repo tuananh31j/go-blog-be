@@ -4,7 +4,7 @@ import (
 	"nta-blog/internal/common"
 	blogBusiness "nta-blog/internal/domain/business/blog"
 	blogModel "nta-blog/internal/domain/model/blog"
-	blogService "nta-blog/internal/domain/service/blog"
+	"nta-blog/internal/domain/service"
 	blogStorage "nta-blog/internal/domain/storage/blog"
 	tagStorage "nta-blog/internal/domain/storage/tag"
 	userStorage "nta-blog/internal/domain/storage/user"
@@ -19,7 +19,7 @@ func CreateBlog(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 		mongoDb := apctx.GetMongoDB()
 		logger := apctx.GetLogger()
 		rdb := apctx.GetRedis()
-		var payload blogModel.CreateBlogPayload
+		var payload blogModel.CreatePayload
 		err := c.BodyParser(&payload)
 		if err != nil {
 			logger.Debug().Err(err).Msg("Payload is not valid!")
@@ -35,7 +35,7 @@ func CreateBlog(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 		tagStore := tagStorage.NewStore(mongoDb)
 		userStore := userStorage.NewStore(mongoDb, rdb)
 
-		serviceBlog := blogService.NewCreateBlogService(tagStore, userStore, blogStore)
+		serviceBlog := service.NewBlogService(tagStore, userStore, blogStore)
 		biz := blogBusiness.NewCreateBlogBiz(serviceBlog)
 		err = biz.CreateBlog(c.Context(), &payload)
 		if err != nil {

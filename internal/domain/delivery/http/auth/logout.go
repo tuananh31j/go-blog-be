@@ -3,8 +3,9 @@ package authHttp
 import (
 	"nta-blog/internal/common"
 	authBusiness "nta-blog/internal/domain/business/auth"
-	authService "nta-blog/internal/domain/service/auth"
+	"nta-blog/internal/domain/service"
 	tokenStorage "nta-blog/internal/domain/storage/token"
+	userStorage "nta-blog/internal/domain/storage/user"
 	"nta-blog/internal/lib/appctx"
 
 	"github.com/gofiber/fiber/v2"
@@ -15,8 +16,9 @@ func Logout(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
 		rdb := apctx.GetRedis()
 		logger := apctx.GetLogger()
-		store := tokenStorage.NewStore(apctx.GetMongoDB(), rdb)
-		service := authService.NewLogoutService(store)
+		tokenStore := tokenStorage.NewStore(apctx.GetMongoDB(), rdb)
+		userStore := userStorage.NewStore(apctx.GetMongoDB(), rdb)
+		service := service.NewAuthService(userStore, tokenStore)
 		biz := authBusiness.NewLogoutBiz(service)
 
 		userId, ok := c.Locals("userId").(primitive.ObjectID)

@@ -3,7 +3,7 @@ package imageHttp
 import (
 	"nta-blog/internal/common"
 	imageBusiness "nta-blog/internal/domain/business/image"
-	imageService "nta-blog/internal/domain/service/image"
+	"nta-blog/internal/domain/service"
 	imageStorage "nta-blog/internal/domain/storage/image"
 	"nta-blog/internal/lib/appctx"
 
@@ -19,7 +19,7 @@ func ListImages(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 		logger := apctx.GetLogger()
 		logger.Debug().Msgf("%v", token)
 		store := imageStorage.NewStore(mongoDB, cld)
-		service := imageService.NewListImageService(store)
+		service := service.NewImageService(store)
 		biz := imageBusiness.NewListImagesBiz(service)
 		data, err := biz.GetListImage(c.Context())
 		if err != nil {

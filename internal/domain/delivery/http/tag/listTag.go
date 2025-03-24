@@ -3,7 +3,7 @@ package tagHttp
 import (
 	"nta-blog/internal/common"
 	tagBusiness "nta-blog/internal/domain/business/tag"
-	tagService "nta-blog/internal/domain/service/tag"
+	"nta-blog/internal/domain/service"
 	tagStorage "nta-blog/internal/domain/storage/tag"
 	"nta-blog/internal/lib/appctx"
 
@@ -16,7 +16,7 @@ func ListTags(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 		logger := apctx.GetLogger()
 
 		tagStore := tagStorage.NewStore(mongoDB)
-		service := tagService.NewListTagService(tagStore)
+		service := service.NewTagService(tagStore)
 		biz := tagBusiness.NewListTagBiz(service)
 		data, err := biz.GetAllTag(c.Context())
 		if err != nil {

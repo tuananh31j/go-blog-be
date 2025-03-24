@@ -3,7 +3,7 @@ package userHttp
 import (
 	"nta-blog/internal/common"
 	userBusiness "nta-blog/internal/domain/business/user"
-	userService "nta-blog/internal/domain/service/user"
+	"nta-blog/internal/domain/service"
 	userStorage "nta-blog/internal/domain/storage/user"
 	"nta-blog/internal/lib/appctx"
 
@@ -24,7 +24,7 @@ func GetMe(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 		}
 
 		store := userStorage.NewStore(mongoDB, rdb)
-		service := userService.NewMeService(store)
+		service := service.NewUserService(store)
 		biz := userBusiness.NewMeBiz(service)
 		user, err := biz.GetMe(c.Context(), userId)
 		if err != nil {
