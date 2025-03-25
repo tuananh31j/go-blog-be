@@ -8,6 +8,7 @@ import (
 	cnst "nta-blog/internal/constant"
 	blogModel "nta-blog/internal/domain/model/blog"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -15,6 +16,8 @@ type MutateMeService interface {
 	CheckTagExists(ctx context.Context, tapId primitive.ObjectID) error
 	CheckUserExists(ctx context.Context, userId primitive.ObjectID) error
 	Create(ctx context.Context, dto *blogModel.Blog) error
+	FindDetailsBlog(ctx context.Context, conditions map[string]interface{}) (*blogModel.Blog, error)
+	Update(ctx context.Context, conditions map[string]interface{}, dto map[string]interface{}) error
 }
 
 type mutateMeBiz struct {
@@ -57,9 +60,29 @@ func (biz *mutateMeBiz) MutateMe(ctx context.Context, dto *blogModel.CreatePaylo
 	if err := biz.service.CheckUserExists(ctx, dto.UserId); err != nil {
 		return err
 	}
-	err := biz.service.Create(ctx, &blog)
+
+	meInfo, err := biz.service.FindDetailsBlog(ctx, map[string]interface{}{"user_id": dto.UserId, "type": cnst.BlogTypeConstant.Me})
 	if err != nil {
-		return common.ErrInternal(err)
+		err = biz.service.Create(ctx, &blog)
+		if err != nil {
+			return common.ErrInternal(err)
+		}
+	} else {
+		blog.Id = meInfo.Id
+		updateData := bson.M{"$set": bson.M{
+			"title":      blog.Title,
+			"content":    blog.Content,
+			"thumnail":   blog.Thumbnail,
+			"summary":    blog.Summary,
+			"status":     blog.Status,
+			"tag_ids":    blog.TagIds,
+			"updated_at": &now,
+		}}
+		err = biz.service.Update(ctx, map[string]interface{}{"_id": meInfo.Id}, updateData)
+		if err != nil {
+			return common.ErrInternal(err)
+		}
 	}
+
 	return nil
 }

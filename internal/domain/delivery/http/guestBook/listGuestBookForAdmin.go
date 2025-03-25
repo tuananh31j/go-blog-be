@@ -43,7 +43,8 @@ func ListGuestBookForAdmin(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 			logger.Err(err).Msg("Failed to get list message")
 			panic(err)
 		}
+		totalPage := total / length
 
-		return c.Status(fiber.StatusOK).JSON(common.NewSuccessResponse(data, page, total, map[string]interface{}{"limit": length, "status": status}))
+		return c.Status(fiber.StatusOK).JSON(common.NewSuccessResponse(data, page, totalPage, total, map[string]interface{}{"limit": length, "status": status}))
 	}
 }

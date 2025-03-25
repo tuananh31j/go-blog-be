@@ -5,6 +5,7 @@ import (
 
 	repository "nta-blog/internal/domain/interface"
 	blogModel "nta-blog/internal/domain/model/blog"
+	tagModel "nta-blog/internal/domain/model/tag"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -44,4 +45,12 @@ func (sv *blogService) ListBlog(ctx context.Context, pipeline bson.A) ([]blogMod
 
 func (sv *blogService) List(ctx context.Context, pipeline bson.A) ([]blogModel.Blog, error) {
 	return sv.blogStore.List(ctx, pipeline)
+}
+
+func (sv *blogService) Update(ctx context.Context, conditions map[string]interface{}, dto map[string]interface{}) error {
+	return sv.blogStore.Update(ctx, conditions, dto)
+}
+
+func (sv *blogService) ListTag(ctx context.Context, filter map[string]interface{}) ([]tagModel.Tag, error) {
+	return sv.tagStore.List(ctx, filter)
 }

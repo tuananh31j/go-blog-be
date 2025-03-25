@@ -48,6 +48,8 @@ func (biz *listBlogBiz) ListBlogForAdmin(ctx context.Context) ([]map[string]inte
 		"summary":   1,
 		"thumbnail": 1,
 		"status":    1,
+		"type":      1,
+
 		"tags": bson.M{"$map": bson.M{
 			"input": "$tags",
 			"as":    "tag",
@@ -76,6 +78,7 @@ func (biz *listBlogBiz) ListBlogForAdmin(ctx context.Context) ([]map[string]inte
 			"status":     blog.Status,
 			"tags":       blog.Tags,
 			"created_at": blog.CreatedAt,
+			"type":       blog.Type,
 		}
 		responseData = append(responseData, blogMap)
 	}

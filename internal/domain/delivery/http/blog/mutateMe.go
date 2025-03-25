@@ -14,37 +14,34 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func UpdateBlog(apctx appctx.AppContext) func(c *fiber.Ctx) error {
+func MutateMe(apctx appctx.AppContext) func(c *fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
+		mongoDb := apctx.GetMongoDB()
 		logger := apctx.GetLogger()
-		mongodb := apctx.GetMongoDB()
 		rdb := apctx.GetRedis()
-		id := c.Params("id")
-		objId, err := primitive.ObjectIDFromHex(id)
-		if err != nil {
-			logger.Debug().Err(err).Msg("Failed to convert id to object id")
-			panic(err)
-		}
-		var payload blogModel.UpdatePayload
-		err = c.BodyParser(&payload)
+		var payload blogModel.CreatePayload
+		err := c.BodyParser(&payload)
 		if err != nil {
 			logger.Debug().Err(err).Msg("Payload is not valid!")
 			panic(err)
 		}
-
-		blogStore := blogStorage.NewStore(mongodb)
-		tagStore := tagStorage.NewStore(mongodb)
-		userStore := userStorage.NewStore(mongodb, rdb)
+		userId, ok := c.Locals("userId").(primitive.ObjectID)
+		if !ok {
+			logger.Debug().Msg("Failed to get userId from context")
+			panic(common.ErrBadRequest(nil))
+		}
+		payload.UserId = userId
+		blogStore := blogStorage.NewStore(mongoDb)
+		tagStore := tagStorage.NewStore(mongoDb)
+		userStore := userStorage.NewStore(mongoDb, rdb)
 
 		serviceBlog := service.NewBlogService(tagStore, userStore, blogStore)
-
-		biz := blogBusiness.NewUpdateBiz(serviceBlog)
-		err = biz.Update(c.Context(), objId, &payload)
+		biz := blogBusiness.NewMutateMeBiz(serviceBlog)
+		err = biz.MutateMe(c.Context(), &payload)
 		if err != nil {
-			logger.Err(err).Msg("Failed to get info")
+			logger.Err(err).Msg("Failed to mutate your information")
 			panic(err)
 		}
-
-		return c.Status(fiber.StatusOK).JSON(common.SimpleSuccessResponse("Update successfully"))
+		return c.Status(fiber.StatusCreated).JSON(common.SimpleSuccessResponse("successfully"))
 	}
 }

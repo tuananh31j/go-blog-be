@@ -1,6 +1,8 @@
 package blogModel
 
 import (
+	"time"
+
 	"nta-blog/internal/common"
 	cnst "nta-blog/internal/constant"
 	tagModel "nta-blog/internal/domain/model/tag"
@@ -33,5 +35,14 @@ type CreatePayload struct {
 	UserId    primitive.ObjectID
 	TagIds    []string         `json:"tag_ids"`
 	Status    cnst.TStatusBlog `json:"status"`
+}
+type UpdatePayload struct {
+	Thumbnail string           `json:"thumbnail"`
+	Summary   string           `json:"summary"`
+	Title     string           `json:"title"`
+	Content   string           `json:"content"`
+	TagIds    []string         `json:"tag_ids"`
+	Status    cnst.TStatusBlog `json:"status"`
 	Type      cnst.IBlogType   `json:"type"`
+	UpdatedAt *time.Time       `bson:"updated_at,omitempty" json:"updated_at,omitempty"`
 }

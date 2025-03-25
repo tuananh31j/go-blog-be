@@ -134,11 +134,16 @@ func setUpAccuntAdmin(userCol *mongo.Collection, email, pass string) {
 		{Key: "avt", Value: "https://avatars.githubusercontent.com/u/132194452?v=4"},
 	}
 
-	result := userCol.FindOneAndUpdate(context.Background(), bson.M{"email": config.Env.EmailAccount}, payload)
+	result := userCol.FindOne(context.Background(), bson.M{"email": config.Env.EmailAccount})
 
 	user := bson.D{}
 	if err := result.Decode(&user); err != nil {
 		_, err := userCol.InsertOne(context.Background(), payload)
+		if err != nil {
+			log.Fatal(err)
+		}
+	} else {
+		_, err := userCol.UpdateOne(context.Background(), bson.M{"email": email}, payload)
 		if err != nil {
 			log.Fatal(err)
 		}

@@ -18,7 +18,7 @@ type BlogRepository interface {
 	Create(ctx context.Context, dto *blogModel.Blog) error
 	Find(ctx context.Context, conditions map[string]interface{}) (*blogModel.Blog, error)
 	List(ctx context.Context, pipeline bson.A) ([]blogModel.Blog, error)
-	Update(ctx context.Context, conditions map[string]interface{}, dto *blogModel.Blog) error
+	Update(ctx context.Context, conditions map[string]interface{}, dto map[string]interface{}) error
 }
 
 type UserRepository interface {
