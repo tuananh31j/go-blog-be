@@ -143,7 +143,7 @@ func setUpAccuntAdmin(userCol *mongo.Collection, email, pass string) {
 			log.Fatal(err)
 		}
 	} else {
-		_, err := userCol.UpdateOne(context.Background(), bson.M{"email": email}, payload)
+		_, err := userCol.UpdateOne(context.Background(), bson.M{"email": email}, bson.D{{"$set", payload}})
 		if err != nil {
 			log.Fatal(err)
 		}

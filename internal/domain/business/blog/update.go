@@ -52,7 +52,7 @@ func (biz *updateBlogBiz) Update(ctx context.Context, blogId primitive.ObjectID,
 	updateData := bson.M{"$set": bson.M{
 		"title":      dto.Title,
 		"content":    dto.Content,
-		"thumnail":   dto.Thumbnail,
+		"thumbnail":  dto.Thumbnail,
 		"summary":    dto.Summary,
 		"status":     dto.Status,
 		"tag_ids":    dto.TagIds,

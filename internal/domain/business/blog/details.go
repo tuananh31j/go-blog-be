@@ -42,7 +42,7 @@ func (biz *detailsBlogBiz) FindDetailsBlog(ctx context.Context, blogId primitive
 		}
 	} else {
 		var pipeline bson.A = bson.A{}
-		pipeline = append(pipeline, bson.M{"$match": bson.M{"status": 1, "_id": bson.M{"$ne": blogId}}})
+		pipeline = append(pipeline, bson.M{"$match": bson.M{"status": 1, "type": blog.Type, "_id": bson.M{"$ne": blogId}}})
 		pipeline = append(pipeline, bson.M{"$limit": 5})
 
 		pipeline = append(pipeline, bson.M{"$project": bson.M{
@@ -56,12 +56,14 @@ func (biz *detailsBlogBiz) FindDetailsBlog(ctx context.Context, blogId primitive
 			return nil, common.ErrInternal(err)
 		}
 		relatedBlog := []map[string]interface{}{}
-		for _, blog := range queryResult {
-			relatedBlog = append(relatedBlog, map[string]interface{}{
-				"id":        blog.Id.Hex(),
-				"title":     blog.Title,
-				"thumbnail": blog.Thumbnail,
-			})
+		if len(queryResult) != 0 {
+			for _, blog := range queryResult {
+				relatedBlog = append(relatedBlog, map[string]interface{}{
+					"id":        blog.Id.Hex(),
+					"title":     blog.Title,
+					"thumbnail": blog.Thumbnail,
+				})
+			}
 		}
 
 		for _, tagId := range blog.TagIds {

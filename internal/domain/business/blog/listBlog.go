@@ -55,6 +55,7 @@ func (biz *listBlogBiz) ListBlog(ctx context.Context, blogType cnst.IBlogType) (
 			},
 		}},
 		"created_at": 1,
+		"updated_at": 1,
 		"user": bson.M{
 			"name_fake": 1,
 		},
@@ -73,6 +74,7 @@ func (biz *listBlogBiz) ListBlog(ctx context.Context, blogType cnst.IBlogType) (
 			"thumbnail":  blog.Thumbnail,
 			"tags":       blog.Tags,
 			"created_at": blog.CreatedAt,
+			"updated_at": blog.UpdatedAt,
 		}
 		responseData = append(responseData, blogMap)
 	}

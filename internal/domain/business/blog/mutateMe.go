@@ -72,7 +72,7 @@ func (biz *mutateMeBiz) MutateMe(ctx context.Context, dto *blogModel.CreatePaylo
 		updateData := bson.M{"$set": bson.M{
 			"title":      blog.Title,
 			"content":    blog.Content,
-			"thumnail":   blog.Thumbnail,
+			"thumbnail":  blog.Thumbnail,
 			"summary":    blog.Summary,
 			"status":     blog.Status,
 			"tag_ids":    blog.TagIds,
